@@ -104,7 +104,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let (t2, s2) = typeinfer_expr env e2
         let env = apply_subst_env s2 env
         let t3 = fresh_ty_var()
-        let s3 = unify t1 (TyArrow (t2, t3))
+        let s3 = unify (apply_subst_ty s2 t1) (TyArrow (t2, t3))
         apply_subst_ty s3 t3, compose_subst (compose_subst s3 s2) s1
 
     | Let (x, tyo, e1, e2) ->
@@ -112,6 +112,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let env = apply_subst_env s1 env
         let so = Option.defaultValue [] (Option.map (unify t1) tyo)
         let env = apply_subst_env so env
+        let t1 = apply_subst_ty so t1
         let tvs = freevars_ty t1 - freevars_scheme_env env
         let sch = Forall (tvs, t1)
         let t2, s2 = typeinfer_expr ((x, sch) :: env) e2
