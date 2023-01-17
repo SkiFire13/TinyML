@@ -167,6 +167,13 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let s2 = compose_subst (unify t2 TyInt) s2
         TyBool, compose_subst s2 s1
 
+    | BinOp (e1, ("and" | "or" as op), e2) ->
+        let t1, s1 = typeinfer_expr env e1
+        let s1 = compose_subst (unify t1 TyBool) s1
+        let t2, s2 = typeinfer_expr (apply_subst_env s1 env) e2
+        let s2 = compose_subst (unify t2 TyBool) s2
+        TyBool, compose_subst s2 s1
+
     | _ -> failwithf "not implemented"
 
 // type checker
