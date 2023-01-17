@@ -127,6 +127,13 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let t3, s3 = Option.defaultValue (TyUnit, []) (Option.map (typeinfer_expr env) e3o)
         let su = unify (apply_subst_ty s3 t2) t3
         apply_subst_ty su t3, compose_subst (compose_subst su s3) sb
+        
+    | Tuple es ->
+        let acc_ty_subst (ts, s) e =
+            let t, sn = typeinfer_expr (apply_subst_env s env) e
+            ts @ [t], compose_subst sn s
+        let tys, s = List.fold acc_ty_subst ([], []) es
+        TyTuple tys, s
 
     | _ -> failwithf "not implemented"
 
