@@ -89,6 +89,14 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
         TyArrow (tx, t), s
 
+        
+    | App (e1, e2) ->
+        let (t1, s1) = typeinfer_expr env e1
+        let (t2, s2) = typeinfer_expr env e2
+        let t3 = fresh_ty_var()
+        let s3 = unify t1 (TyArrow (t2, t3))
+        t3, compose_subst (compose_subst s3 s2) s1
+
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
         let tvs = freevars_ty t1 - freevars_scheme_env env
