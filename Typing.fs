@@ -56,17 +56,8 @@ module TyVarGenerator =
 let fresh_ty_var = TyVarGenerator.fresh_ty_var
 
 let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
-    let rec refresh_ty (map : Map<tyvar, ty>) (t : ty): ty =
-        match t with
-        | TyName _ -> t
-        | TyArrow (t1, t2) -> TyArrow (refresh_ty map t1, refresh_ty map t2)
-        | TyVar tv -> match Map.tryFind tv map with
-            | Some t -> t
-            | None -> t
-        | TyTuple ts -> TyTuple (List.map (refresh_ty map) ts)
-
-    let map = Set.fold (fun map tv -> Map.add tv (fresh_ty_var()) map) Map.empty tvs
-    refresh_ty map ty
+    let s = List.map (fun tv -> (tv, fresh_ty_var())) (Set.toList tvs)
+    apply_subst s ty
 
 // type inference
 //
