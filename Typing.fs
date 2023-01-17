@@ -179,6 +179,12 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let s = compose_subst (unify t TyBool) s
         TyBool, s
 
+    | UnOp ("-", e) ->
+        let t, s = typeinfer_expr env e
+        match t with
+        | TyInt | TyFloat -> t, s
+        | _ -> TyInt, compose_subst (unify t TyInt) s
+
     | _ -> failwithf "not implemented"
 
 // type checker
