@@ -78,6 +78,11 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let _, sch = List.find (fun (n, _) -> n = x) env
         refresh_scheme sch, []
 
+    | Lambda (x, txo, e) ->
+        let tx = Option.defaultWith fresh_ty_var txo
+        let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
+        TyArrow (tx, t), s
+
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
         let tvs = freevars_ty t1 - freevars_scheme_env env
