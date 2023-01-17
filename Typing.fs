@@ -32,6 +32,26 @@ let freevars_scheme (Forall (tvs, t)) = freevars_ty t - tvs
 let freevars_scheme_env env =
     List.fold (fun r (_, sch) -> r + freevars_scheme sch) Set.empty env
 
+module TyVarGenerator =
+    let mutable private next_ty_var: tyvar = 0
+    let fresh_ty_var (): ty =
+        let ty = TyVar next_ty_var
+        next_ty_var <- next_ty_var + 1;
+        ty
+let fresh_ty_var = TyVarGenerator.fresh_ty_var
+
+let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
+    let rec refresh_ty (map : Map<tyvar, ty>) (t : ty): ty =
+        match t with
+        | TyName _ -> t
+        | TyArrow (t1, t2) -> TyArrow (refresh_ty map t1, refresh_ty map t2)
+        | TyVar tv -> match Map.tryFind tv map with
+            | Some t -> t
+            | None -> t
+        | TyTuple ts -> TyTuple (List.map (refresh_ty map) ts)
+
+    let map = Set.fold (fun map tv -> Map.add tv (fresh_ty_var()) map) Map.empty tvs
+    refresh_ty map ty
 
 // type inference
 //
@@ -53,6 +73,10 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | Lit (LString _) -> TyString, []
     | Lit (LChar _) -> TyChar, [] 
     | Lit LUnit -> TyUnit, []
+
+    | Var x ->
+        let _, sch = List.find (fun (n, _) -> n = x) env
+        refresh_scheme sch, []
 
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
