@@ -9,17 +9,6 @@ open Ast
 
 let type_error fmt = throw_formatted TypeError fmt
 
-type subst = (tyvar * ty) list
-
-// TODO implement this
-let unify (t1 : ty) (t2 : ty) : subst = []
-
-// TODO implement this
-let apply_subst (t : ty) (s : subst) : ty = t
-
-// TODO implement this
-let compose_subst (s1 : subst) (s2 : subst) : subst = s1 @ s2
-
 let rec freevars_ty t =
     match t with
     | TyName s -> Set.empty
@@ -31,6 +20,24 @@ let freevars_scheme (Forall (tvs, t)) = freevars_ty t - tvs
 
 let freevars_scheme_env env =
     List.fold (fun r (_, sch) -> r + freevars_scheme sch) Set.empty env
+
+type subst = (tyvar * ty) list
+
+// TODO implement this
+let compose_subst (s1 : subst) (s2 : subst) : subst = s1 @ s2
+
+let rec unify (t1 : ty) (t2 : ty) : subst =
+    match (t1, t2) with
+    | (TyName n1, TyName n2) when n1 = n2 -> []
+    | (TyArrow (t1, t2), TyArrow (t3, t4)) -> compose_subst (unify t2 t4) (unify t1 t3)
+    | (TyVar tv1, TyVar tv2) when tv1 = tv2 -> []
+    | (TyVar tv, t) | (t, TyVar tv) when not (Set.contains tv (freevars_ty t)) -> [(tv, t)]
+    | (TyTuple ts1, TyTuple ts2) when List.length ts1 = List.length ts2 ->
+        List.fold compose_subst [] (List.map2 unify ts1 ts2)
+    | _ -> type_error "unification error: expected %s got %s" (pretty_ty t1) (pretty_ty t2)
+
+// TODO implement this
+let apply_subst (t : ty) (s : subst) : ty = t
 
 module TyVarGenerator =
     let mutable private next_ty_var: tyvar = 0
