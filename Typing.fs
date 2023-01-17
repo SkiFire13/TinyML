@@ -110,10 +110,12 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
         let env = apply_subst_env s1 env
+        let so = Option.defaultValue [] (Option.map (unify t1) tyo)
+        let env = apply_subst_env so env
         let tvs = freevars_ty t1 - freevars_scheme_env env
         let sch = Forall (tvs, t1)
         let t2, s2 = typeinfer_expr ((x, sch) :: env) e2
-        t2, compose_subst s2 s1
+        t2, compose_subst (compose_subst s2 so) s1
 
     | _ -> failwithf "not implemented"
 
