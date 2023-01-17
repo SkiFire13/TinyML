@@ -174,6 +174,11 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let s2 = compose_subst (unify t2 TyBool) s2
         TyBool, compose_subst s2 s1
 
+    | UnOp ("not", e) ->
+        let t, s = typeinfer_expr env e
+        let s = compose_subst (unify t TyBool) s
+        TyBool, s
+
     | _ -> failwithf "not implemented"
 
 // type checker
