@@ -38,19 +38,21 @@ let apply_subst_scheme (s : subst) (Forall (ftv, t) : scheme) : scheme =
 let apply_subst_env (s : subst) (env : scheme env) : scheme env =
     List.map (fun (n, sch) -> (n, apply_subst_scheme s sch)) env
 
-let compose_subst (s1 : subst) (s2 : subst) : subst = 
-    let s2 = List.map (fun (tv, t) -> (tv, apply_subst_ty s1 t)) s2
-    let s2 = List.filter (fun (tv, t) -> t = TyVar tv) s2
-    s1 @ s2
+let compose_subst (s1 : subst) (s2 : subst) : subst =
+    s1 @ List.map (fun (tv, t) -> (tv, apply_subst_ty s1 t)) s2
 
 let rec unify (t1 : ty) (t2 : ty) : subst =
     match (t1, t2) with
     | (TyName n1, TyName n2) when n1 = n2 -> []
-    | (TyArrow (t1, t2), TyArrow (t3, t4)) -> compose_subst (unify t2 t4) (unify t1 t3)
+    | (TyArrow (t1, t2), TyArrow (t3, t4)) ->
+        let s1 = unify t1 t3
+        let s2 = unify (apply_subst_ty s1 t2) (apply_subst_ty s1 t4)
+        compose_subst s1 s2
     | (TyVar tv1, TyVar tv2) when tv1 = tv2 -> []
     | (TyVar tv, t) | (t, TyVar tv) when not (Set.contains tv (freevars_ty t)) -> [(tv, t)]
     | (TyTuple ts1, TyTuple ts2) when List.length ts1 = List.length ts2 ->
-        List.fold compose_subst [] (List.map2 unify ts1 ts2)
+        let compose_unify s t1 t2 = compose_subst (unify (apply_subst_ty s t1) (apply_subst_ty s t2)) s
+        List.fold2 compose_unify [] ts1 ts2
     | _ -> type_error "unification error: expected %s got %s" (pretty_ty t1) (pretty_ty t2)
 
 module TyVarGenerator =
@@ -93,18 +95,21 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | Lambda (x, txo, e) ->
         let tx = Option.defaultWith fresh_ty_var txo
         let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
-        TyArrow (tx, t), s
+        TyArrow (apply_subst_ty s tx, t), s
 
         
     | App (e1, e2) ->
         let (t1, s1) = typeinfer_expr env e1
+        let env = apply_subst_env s1 env
         let (t2, s2) = typeinfer_expr env e2
+        let env = apply_subst_env s2 env
         let t3 = fresh_ty_var()
         let s3 = unify t1 (TyArrow (t2, t3))
-        t3, compose_subst (compose_subst s3 s2) s1
+        apply_subst_ty s3 t3, compose_subst (compose_subst s3 s2) s1
 
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
+        let env = apply_subst_env s1 env
         let tvs = freevars_ty t1 - freevars_scheme_env env
         let sch = Forall (tvs, t1)
         let t2, s2 = typeinfer_expr ((x, sch) :: env) e2
