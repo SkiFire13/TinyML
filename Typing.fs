@@ -117,6 +117,16 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let t2, s2 = typeinfer_expr ((x, sch) :: env) e2
         t2, compose_subst (compose_subst s2 so) s1
 
+    | IfThenElse (e1, e2, e3o) ->
+        let t1, s1 = typeinfer_expr env e1
+        let sb = compose_subst (unify t1 TyBool) s1
+        let env = apply_subst_env sb env
+        let t2, s2 = typeinfer_expr env e2
+        let env = apply_subst_env s2 env
+        let t3, s3 = Option.defaultValue (TyUnit, []) (Option.map (typeinfer_expr env) e3o)
+        let su = unify (apply_subst_ty s3 t2) t3
+        apply_subst_ty su t3, compose_subst (compose_subst su s3) sb
+
     | _ -> failwithf "not implemented"
 
 // type checker
