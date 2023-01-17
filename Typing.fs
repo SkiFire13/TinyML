@@ -23,8 +23,10 @@ let freevars_scheme_env env =
 
 type subst = (tyvar * ty) list
 
-// TODO implement this
-let compose_subst (s1 : subst) (s2 : subst) : subst = s1 @ s2
+let compose_subst (s1 : subst) (s2 : subst) : subst = 
+    let s2 = List.map (fun (tv, t) -> (tv, apply_subst t s1)) s2
+    let s2 = List.filter (fun (tv, t) -> t = TyVar tv) s2
+    s1 @ s2
 
 let rec unify (t1 : ty) (t2 : ty) : subst =
     match (t1, t2) with
