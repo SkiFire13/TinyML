@@ -135,6 +135,19 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let tys, s = List.fold acc_ty_subst ([], []) es
         TyTuple tys, s
 
+    | LetRec (f, tfo, e1, e2) ->
+        let tf = Option.defaultWith fresh_ty_var tfo
+        let t1, s1 = typeinfer_expr ((f, Forall (Set.empty, tf)) :: env) e1
+        let sf = compose_subst (unify (apply_subst_ty s1 tf) t1) s1
+        let ty_arrow = TyArrow (fresh_ty_var(), fresh_ty_var())
+        let sf = compose_subst (unify (apply_subst_ty sf t1) ty_arrow) sf
+        let env = apply_subst_env sf env
+        let t1 = apply_subst_ty sf t1
+        let tvs = freevars_ty t1 - freevars_scheme_env env
+        let sch = Forall (tvs, t1)
+        let t2, s2 = typeinfer_expr ((f, sch) :: env) e2
+        t2, compose_subst s2 sf
+
     | _ -> failwithf "not implemented"
 
 // type checker
