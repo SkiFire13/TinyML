@@ -15,7 +15,8 @@ let interpret_expr tenv venv e =
     #if DEBUG
     printfn "AST:\t%A\npretty:\t%s" e (pretty_expr e)
     #endif
-    let t = Typing.typecheck_expr tenv e
+    let (t, s) = Typing.typeinfer_expr tenv e
+    // TODO: Check s is valid
     #if DEBUG
     printfn "type:\t%s" (pretty_ty t)
     #endif
@@ -23,7 +24,7 @@ let interpret_expr tenv venv e =
     #if DEBUG
     printfn "value:\t%s\n" (pretty_value v)
     #endif
-    t, v
+    Forall (Typing.freevars_ty t, t), v
 
 let trap f =
     try f ()
@@ -37,28 +38,28 @@ let main_interpreter filename =
         use fstr = new IO.FileStream (filename, IO.FileMode.Open)
         use rd = new IO.StreamReader (fstr)
         let prg = parse_from_TextReader rd filename Parser.program 
-        let t, v = interpret_expr [] [] prg
+        let Forall (_, t), v = interpret_expr [] [] prg
         printfn "type:\t%s\nvalue:\t%s" (pretty_ty t) (pretty_value v)
 
 let main_interactive () =
     printfn "entering interactive mode..."
-    let mutable tenv = Typing.gamma0
+    let mutable tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) Typing.gamma0
     let mutable venv = []
     while true do
         trap <| fun () ->
             printf "\n> "
             stdout.Flush ()
-            let x, (t, v) =
+            let x, (Forall (_, t), v) =
                 match parse_from_TextReader stdin "LINE" Parser.interactive with 
                 | IExpr e ->
                     "it", interpret_expr tenv venv e
 
                 | IBinding (_, x, _, _ as b) ->
-                    let t, v = interpret_expr tenv venv (LetIn (b, Var x)) // TRICK: put the variable itself as body after the in
+                    let s, v = interpret_expr tenv venv (LetIn (b, Var x)) // TRICK: put the variable itself as body after the in
                     // update global environments
-                    tenv <- (x, t) :: tenv
+                    tenv <- (x, s) :: tenv
                     venv <- (x, v) :: venv
-                    x, (t, v)
+                    x, (s, v)
 
             printfn "val %s : %s = %s" x (pretty_ty t) (pretty_value v)
                 
