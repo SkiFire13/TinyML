@@ -23,8 +23,17 @@ let freevars_scheme_env env =
 
 type subst = (tyvar * ty) list
 
+let rec apply_subst (s : subst) (t : ty) : ty =
+    match t with
+    | TyName n -> t
+    | TyArrow (t1, t2) -> TyArrow ((apply_subst s t1), (apply_subst s t2))
+    | TyVar tv -> match List.tryFind (fun (stv, _) -> stv = tv) s with
+        | Some (_, t) -> t
+        | None -> t
+    | TyTuple ts -> TyTuple (List.map (apply_subst s) ts)
+
 let compose_subst (s1 : subst) (s2 : subst) : subst = 
-    let s2 = List.map (fun (tv, t) -> (tv, apply_subst t s1)) s2
+    let s2 = List.map (fun (tv, t) -> (tv, apply_subst s1 t)) s2
     let s2 = List.filter (fun (tv, t) -> t = TyVar tv) s2
     s1 @ s2
 
@@ -37,9 +46,6 @@ let rec unify (t1 : ty) (t2 : ty) : subst =
     | (TyTuple ts1, TyTuple ts2) when List.length ts1 = List.length ts2 ->
         List.fold compose_subst [] (List.map2 unify ts1 ts2)
     | _ -> type_error "unification error: expected %s got %s" (pretty_ty t1) (pretty_ty t2)
-
-// TODO implement this
-let apply_subst (t : ty) (s : subst) : ty = t
 
 module TyVarGenerator =
     let mutable private next_ty_var: tyvar = 0
