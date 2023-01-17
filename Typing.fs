@@ -23,17 +23,23 @@ let freevars_scheme_env env =
 
 type subst = (tyvar * ty) list
 
-let rec apply_subst (s : subst) (t : ty) : ty =
+let rec apply_subst_ty (s : subst) (t : ty) : ty =
     match t with
     | TyName n -> t
-    | TyArrow (t1, t2) -> TyArrow ((apply_subst s t1), (apply_subst s t2))
+    | TyArrow (t1, t2) -> TyArrow ((apply_subst_ty s t1), (apply_subst_ty s t2))
     | TyVar tv -> match List.tryFind (fun (stv, _) -> stv = tv) s with
         | Some (_, t) -> t
         | None -> t
-    | TyTuple ts -> TyTuple (List.map (apply_subst s) ts)
+    | TyTuple ts -> TyTuple (List.map (apply_subst_ty s) ts)
+
+let apply_subst_scheme (s : subst) (Forall (ftv, t) : scheme) : scheme =
+    Forall (ftv, apply_subst_ty s t)
+
+let apply_subst_env (s : subst) (env : scheme env) : scheme env =
+    List.map (fun (n, sch) -> (n, apply_subst_scheme s sch)) env
 
 let compose_subst (s1 : subst) (s2 : subst) : subst = 
-    let s2 = List.map (fun (tv, t) -> (tv, apply_subst s1 t)) s2
+    let s2 = List.map (fun (tv, t) -> (tv, apply_subst_ty s1 t)) s2
     let s2 = List.filter (fun (tv, t) -> t = TyVar tv) s2
     s1 @ s2
 
@@ -57,7 +63,7 @@ let fresh_ty_var = TyVarGenerator.fresh_ty_var
 
 let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
     let s = List.map (fun tv -> (tv, fresh_ty_var())) (Set.toList tvs)
-    apply_subst s ty
+    apply_subst_ty s ty
 
 // type inference
 //
