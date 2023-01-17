@@ -148,6 +148,18 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let t2, s2 = typeinfer_expr ((f, sch) :: env) e2
         t2, compose_subst s2 sf
 
+    | BinOp (e1, ("+" | "-" | "/" | "%" | "*" as op), e2) ->
+        let check_or_infer_num so e =
+            let t, s = typeinfer_expr (apply_subst_env so env) e1
+            match t with
+            | TyInt | TyFloat -> t, []
+            | _ -> TyInt, compose_subst (unify t TyInt) (compose_subst s so)
+        let t1, s1 = check_or_infer_num [] e1
+        let t2, s2 = check_or_infer_num s1 e2
+        match t1, t2 with
+        | TyInt, TyInt -> TyInt, s2
+        | _ -> TyFloat, s2
+
     | _ -> failwithf "not implemented"
 
 // type checker
