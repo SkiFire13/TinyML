@@ -113,11 +113,14 @@ let pretty_env p env = sprintf "[%s]" (flatten (fun (x, o) -> sprintf "%s=%s" x 
 let pretty_tupled p l = flatten p ", " l
 
 let rec pretty_ty t =
-    match t with
-    | TyName s -> s
-    | TyArrow (t1, t2) -> sprintf "%s -> %s" (pretty_ty t1) (pretty_ty t2)
-    | TyVar n -> sprintf "'%d" n
-    | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty ts)
+    let rec pretty_ty_inner t p =
+        match t with
+        | TyName s -> s
+        | TyArrow (t1, t2) when p -> sprintf "(%s -> %s)" (pretty_ty_inner t1 true) (pretty_ty_inner t2 false)
+        | TyArrow (t1, t2) -> sprintf "%s -> %s" (pretty_ty_inner t1 true) (pretty_ty_inner t2 false)
+        | TyVar n -> sprintf "'%d" n
+        | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty ts)
+    pretty_ty_inner t false
 
 let pretty_lit lit =
     match lit with
