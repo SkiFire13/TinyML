@@ -88,6 +88,6 @@ let parse_from_lexbuf syntax_error lexbuf filename (start_line, start_col) parse
    init_lexbuf filename (start_line, start_col) lexbuf
    yparse syntax_error parser tokenizer tokenTagToTokenId lexbuf
 
-let parse_from_TextReader syntax_error trd = parse_from_lexbuf syntax_error (Lexing.LexBuffer<_>.FromTextReader trd)
+let parse_from_TextReader syntax_error (trd: IO.TextReader) = parse_from_lexbuf syntax_error (Lexing.LexBuffer<_>.FromFunction (fun (b, s, _) -> trd.Read(b, s, 1)))
 
 let parse_from_string syntax_error s name = parse_from_lexbuf syntax_error (Lexing.LexBuffer<_>.FromString s) (sprintf "<%s>" name)
