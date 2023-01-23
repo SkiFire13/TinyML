@@ -27,7 +27,8 @@ let rec apply_subst_ty (s : subst) (t : ty) : ty =
     match t with
     | TyName _ -> t
     | TyArrow (t1, t2) -> TyArrow ((apply_subst_ty s t1), (apply_subst_ty s t2))
-    | TyVar tv -> match List.tryFind (fun (stv, _) -> stv = tv) s with
+    | TyVar tv ->
+        match List.tryFind (fun (stv, _) -> stv = tv) s with
         | Some (_, t) -> t
         | None -> t
     | TyTuple ts -> TyTuple (List.map (apply_subst_ty s) ts)
