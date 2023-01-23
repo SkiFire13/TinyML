@@ -11,7 +11,7 @@ let type_error fmt = throw_formatted TypeError fmt
 
 let rec freevars_ty t =
     match t with
-    | TyName s -> Set.empty
+    | TyName _ -> Set.empty
     | TyArrow (t1, t2) -> (freevars_ty t1) + (freevars_ty t2)
     | TyVar tv -> Set.singleton tv
     | TyTuple ts -> List.fold (fun r t -> r + freevars_ty t) Set.empty ts
@@ -19,13 +19,13 @@ let rec freevars_ty t =
 let freevars_scheme (Forall (tvs, t)) = freevars_ty t - tvs
 
 let freevars_scheme_env env =
-    List.fold (fun r (_, sch) -> r + freevars_scheme sch) Set.empty env
+    List.fold (fun fv (_, sch) -> fv + freevars_scheme sch) Set.empty env
 
 type subst = (tyvar * ty) list
 
 let rec apply_subst_ty (s : subst) (t : ty) : ty =
     match t with
-    | TyName n -> t
+    | TyName _ -> t
     | TyArrow (t1, t2) -> TyArrow ((apply_subst_ty s t1), (apply_subst_ty s t2))
     | TyVar tv -> match List.tryFind (fun (stv, _) -> stv = tv) s with
         | Some (_, t) -> t
@@ -38,8 +38,8 @@ let apply_subst_scheme (s : subst) (Forall (ftv, t) : scheme) : scheme =
 let apply_subst_env (s : subst) (env : scheme env) : scheme env =
     List.map (fun (n, sch) -> (n, apply_subst_scheme s sch)) env
 
-let compose_subst (s1 : subst) (s2 : subst) : subst =
-    s1 @ List.map (fun (tv, t) -> (tv, apply_subst_ty s1 t)) s2
+let compose_subst (snew : subst) (sold : subst) : subst =
+    snew @ List.map (fun (tv, t) -> (tv, apply_subst_ty snew t)) sold
 
 let rec unify (t1 : ty) (t2 : ty) : subst =
     match (t1, t2) with
@@ -73,10 +73,18 @@ let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
 let gamma0 = [
     ("+", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
     ("-", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
-
+    ("/", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
+    ("%", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
+    ("*", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
+    ("<", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
+    ("<=", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
+    (">", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
+    (">=", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
+    ("=", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
+    ("<>", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
+    ("and", TyArrow (TyBool, TyArrow (TyBool, TyBool)))
+    ("or", TyArrow (TyBool, TyArrow (TyBool, TyBool)))
 ]
-
-
 
 // TODO for exam
 let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
@@ -160,22 +168,21 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     
     | BinOp (e1, ("<" | "<=" | ">" | ">=" | "=" | "<>" as op), e2) ->
         let t1, s1 = typeinfer_expr env e1
-        let s1 = compose_subst (unify t1 TyInt) s1
-        let t2, s2 = typeinfer_expr (apply_subst_env s1 env) e2
-        let s2 = compose_subst (unify t2 TyInt) s2
-        TyBool, compose_subst s2 s1
+        let s1b = compose_subst (unify t1 TyInt) s1
+        let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
+        let s2b = compose_subst (unify t2 TyInt) s2
+        TyBool, compose_subst s2b s1b
 
     | BinOp (e1, ("and" | "or" as op), e2) ->
         let t1, s1 = typeinfer_expr env e1
-        let s1 = compose_subst (unify t1 TyBool) s1
-        let t2, s2 = typeinfer_expr (apply_subst_env s1 env) e2
-        let s2 = compose_subst (unify t2 TyBool) s2
-        TyBool, compose_subst s2 s1
+        let s1b = compose_subst (unify t1 TyBool) s1
+        let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
+        let s2b = compose_subst (unify t2 TyBool) s2
+        TyBool, compose_subst s2b s1b
 
     | UnOp ("not", e) ->
         let t, s = typeinfer_expr env e
-        let s = compose_subst (unify t TyBool) s
-        TyBool, s
+        TyBool, compose_subst (unify t TyBool) s
 
     | UnOp ("-", e) ->
         let t, s = typeinfer_expr env e
