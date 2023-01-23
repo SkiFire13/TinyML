@@ -47,7 +47,7 @@ let rec unify (t1 : ty) (t2 : ty) : subst =
     | (TyArrow (t1, t2), TyArrow (t3, t4)) ->
         let s1 = unify t1 t3
         let s2 = unify (apply_subst_ty s1 t2) (apply_subst_ty s1 t4)
-        compose_subst s1 s2
+        compose_subst s2 s1
     | (TyVar tv1, TyVar tv2) when tv1 = tv2 -> []
     | (TyVar tv, t) | (t, TyVar tv) when not (Set.contains tv (freevars_ty t)) -> [(tv, t)]
     | (TyTuple ts1, TyTuple ts2) when List.length ts1 = List.length ts2 ->
@@ -100,9 +100,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         
     | App (e1, e2) ->
         let (t1, s1) = typeinfer_expr env e1
-        let env = apply_subst_env s1 env
-        let (t2, s2) = typeinfer_expr env e2
-        let env = apply_subst_env s2 env
+        let (t2, s2) = typeinfer_expr (apply_subst_env s1 env) e2
         let t3 = fresh_ty_var()
         let s3 = unify (apply_subst_ty s2 t1) (TyArrow (t2, t3))
         apply_subst_ty s3 t3, compose_subst (compose_subst s3 s2) s1
@@ -126,14 +124,14 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let env = apply_subst_env s2 env
         let t3, s3 = Option.defaultValue (TyUnit, []) (Option.map (typeinfer_expr env) e3o)
         let su = unify (apply_subst_ty s3 t2) t3
-        apply_subst_ty su t3, compose_subst (compose_subst su s3) sb
+        apply_subst_ty su t3, compose_subst (compose_subst su s3) (compose_subst s2 sb)
         
     | Tuple es ->
         let acc_ty_subst (ts, s) e =
             let t, sn = typeinfer_expr (apply_subst_env s env) e
             ts @ [t], compose_subst sn s
         let tys, s = List.fold acc_ty_subst ([], []) es
-        TyTuple tys, s
+        apply_subst_ty s (TyTuple tys), s
 
     | LetRec (f, tfo, e1, e2) ->
         let tf = Option.defaultWith fresh_ty_var tfo
@@ -150,9 +148,9 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
 
     | BinOp (e1, ("+" | "-" | "/" | "%" | "*" as op), e2) ->
         let check_or_infer_num so e =
-            let t, s = typeinfer_expr (apply_subst_env so env) e1
+            let t, s = typeinfer_expr (apply_subst_env so env) e
             match t with
-            | TyInt | TyFloat -> t, []
+            | TyInt | TyFloat -> t, (compose_subst s so)
             | _ -> TyInt, compose_subst (unify t TyInt) (compose_subst s so)
         let t1, s1 = check_or_infer_num [] e1
         let t2, s2 = check_or_infer_num s1 e2
