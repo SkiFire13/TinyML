@@ -40,6 +40,8 @@ let rec eval_expr (env : value env) (e : expr) : value =
                        | VLit (LBool false) -> e3
                        | _ -> unexpected_error "eval_expr: non-boolean in if guard: %s" (pretty_value v1)
                        )
+    | Tuple es ->
+        VTuple (List.map (eval_expr env) es)
 
     | Let (x, _, e1, e2) -> 
         let v1 = eval_expr env e1
