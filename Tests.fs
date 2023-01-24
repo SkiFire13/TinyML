@@ -68,3 +68,10 @@ let ``Test simple if-then-else`` () =
     assert_inferred_type_eq
         "fun x y -> if x then x else y"
         (TyArrow (TyBool, TyArrow (TyBool, TyBool)))
+
+[<Fact>]
+let ``Test simple tuple`` () =
+    assert_inferred_type_eq
+        "(1, 2.0, true, \"foo\", 'c', ())"
+        (TyTuple [ TyInt; TyFloat; TyBool; TyString; TyChar; TyUnit ])
+    assert_inferred_type_eq "let x = 1 in (x, x)" (TyTuple [ TyInt; TyInt ])
