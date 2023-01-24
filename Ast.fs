@@ -96,6 +96,24 @@ type value =
 
 type interactive = IExpr of expr | IBinding of binding
 
+let normalize_ty t =
+    let rec normalize_ty_inner s t =
+        match t with
+        | TyName _ -> s, t
+        | TyArrow (t1, t2) ->
+            let s1, t1 = normalize_ty_inner s t1
+            let s2, t2 = normalize_ty_inner s1 t2
+            s2, TyArrow (t1, t2)
+        | TyVar tv ->
+            match List.tryFind (fun (tvk, _) -> tvk = tv) s with
+            | Some (_, tvs) -> s, TyVar tvs
+            | None -> (tv, List.length s) :: s, TyVar (List.length s)
+        | TyTuple ts ->
+            let s, ts = List.fold (fun (s, ts) t -> let s, t = normalize_ty_inner s t in (s, ts @ [t])) (s, []) ts
+            s, TyTuple ts
+    let _, t = normalize_ty_inner [] t
+    t
+
 // pretty printers
 //
 
@@ -112,15 +130,21 @@ let pretty_env p env = sprintf "[%s]" (flatten (fun (x, o) -> sprintf "%s=%s" x 
 // print any tuple given a printer p for its elements
 let pretty_tupled p l = flatten p ", " l
 
-let rec pretty_ty t =
-    let rec pretty_ty_inner t p =
+let rec pretty_tyvar tyvar =
+    let c = string (char (int 'a' + tyvar))
+    (if tyvar < 26 then "'" else (pretty_tyvar (tyvar / 26))) + c
+
+let pretty_ty t =
+    let rec pretty_ty_inner t =
         match t with
         | TyName s -> s
-        | TyArrow (t1, t2) when p -> sprintf "(%s -> %s)" (pretty_ty_inner t1 true) (pretty_ty_inner t2 false)
-        | TyArrow (t1, t2) -> sprintf "%s -> %s" (pretty_ty_inner t1 true) (pretty_ty_inner t2 false)
-        | TyVar n -> sprintf "'%d" n
-        | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty ts)
-    pretty_ty_inner t false
+        | TyArrow (t1, t2) ->
+            match t1 with
+            | TyArrow _ -> sprintf "(%s) -> %s" (pretty_ty_inner t1) (pretty_ty_inner t2)
+            | _ -> sprintf "%s -> %s" (pretty_ty_inner t1) (pretty_ty_inner t2)
+        | TyVar n -> pretty_tyvar n
+        | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty_inner ts)
+    pretty_ty_inner (normalize_ty t)
 
 let pretty_lit lit =
     match lit with
