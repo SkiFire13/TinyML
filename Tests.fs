@@ -75,3 +75,9 @@ let ``Test simple tuple`` () =
         "(1, 2.0, true, \"foo\", 'c', ())"
         (TyTuple [ TyInt; TyFloat; TyBool; TyString; TyChar; TyUnit ])
     assert_inferred_type_eq "let x = 1 in (x, x)" (TyTuple [ TyInt; TyInt ])
+
+[<Fact>]
+let ``Test simple let-rec`` () =
+    assert_inferred_type_eq
+        "let rec f x = if x < 1 then 0 else f (x - 1) in f"
+        (TyArrow (TyInt, TyInt))
