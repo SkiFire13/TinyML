@@ -81,3 +81,17 @@ let ``Test simple let-rec`` () =
     assert_inferred_type_eq
         "let rec f x = if x < 1 then 0 else f (x - 1) in f"
         (TyArrow (TyInt, TyInt))
+
+[<Fact>]
+let ``Test weird expression`` () =
+    assert_inferred_type_eq
+        "fun x y f1 f2 f3 -> (f1 y, f2 y, f3 y,
+            (((if true then f1 else f2) x) + ((if true then f1 else f3) x)), y + 1)"
+        (
+            TyArrow (TyInt, 
+            TyArrow (TyInt, 
+            TyArrow (TyArrow(TyInt, TyInt), 
+            TyArrow (TyArrow(TyInt, TyInt), 
+            TyArrow (TyArrow(TyInt, TyInt), 
+            TyTuple [TyInt; TyInt; TyInt; TyInt; TyInt]
+        ))))))
