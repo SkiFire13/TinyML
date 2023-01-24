@@ -59,3 +59,12 @@ let ``Test simple application`` () =
 [<Fact>]
 let ``Test simple let scheme`` () =
     assert_inferred_type_eq "let f x = x in f" (TyArrow (TyVar 0, TyVar 0))
+
+[<Fact>]
+let ``Test simple if-then-else`` () =
+    assert_inferred_type_eq
+        "fun x y z -> if x then y else z"
+        (TyArrow (TyBool, TyArrow (TyVar 0, TyArrow (TyVar 0, TyVar 0))))
+    assert_inferred_type_eq
+        "fun x y -> if x then x else y"
+        (TyArrow (TyBool, TyArrow (TyBool, TyBool)))
