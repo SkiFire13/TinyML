@@ -40,3 +40,8 @@ let ``Test literals`` () =
     assert_inferred_type_eq "\"foo\"" TyString
     assert_inferred_type_eq "'c'" TyChar
     assert_inferred_type_eq "()" TyUnit
+
+[<Fact>]
+let ``Test simple let`` () =
+    assert_inferred_type_eq "let a = 1 in a" TyInt
+    assert_inferred_type_eq "let a = \"foo\" in a" TyString
