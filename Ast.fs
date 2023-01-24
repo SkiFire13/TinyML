@@ -128,7 +128,7 @@ let rec flatten p sep es =
 let pretty_env p env = sprintf "[%s]" (flatten (fun (x, o) -> sprintf "%s=%s" x (p o)) ";" env)
 
 // print any tuple given a printer p for its elements
-let pretty_tupled p l = flatten p ", " l
+let pretty_tupled p l = flatten p "," l
 
 let rec pretty_tyvar tyvar =
     let c = string (char (int 'a' + tyvar))
