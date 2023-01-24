@@ -55,3 +55,7 @@ let ``Test simple lambda`` () =
 let ``Test simple application`` () =
     assert_inferred_type_eq "let f x = x in f 2" TyInt
     assert_inferred_type_eq "let f x y = x + y in f 2" (TyArrow (TyInt, TyInt))
+
+[<Fact>]
+let ``Test simple let scheme`` () =
+    assert_inferred_type_eq "let f x = x in f" (TyArrow (TyVar 0, TyVar 0))
