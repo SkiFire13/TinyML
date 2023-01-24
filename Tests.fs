@@ -31,6 +31,15 @@ let assert_inferred_type_eq str expected_ty =
         t
     Assert.Equal ((normalize_ty expr_ty), (normalize_ty expected_ty))
 
+let assert_inference_error str =
+    let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) gamma0
+    let expr = parse_expr_from_string str
+    try
+        let _ = typeinfer_expr tenv expr
+        Assert.Fail "Type inference didn't fail"
+    with _ ->
+        ()
+
 [<Fact>]
 let ``Test literals`` () =
     assert_inferred_type_eq "1" TyInt
@@ -95,3 +104,18 @@ let ``Test weird expression`` () =
             TyArrow (TyArrow(TyInt, TyInt), 
             TyTuple [TyInt; TyInt; TyInt; TyInt; TyInt]
         ))))))
+
+[<Fact>]
+let ``Test let type error`` () =
+    assert_inference_error "let x : int = 1.0 in x"
+    assert_inference_error "let x : bool = 1 in x"
+
+[<Fact>]
+let ``Test literal type error`` () =
+    assert_inference_error "1 + true"
+    assert_inference_error "if 1 then () else ()"
+    assert_inference_error "if true then 1 else 1.0"
+
+[<Fact>]
+let ``Test recursive type`` () =
+    assert_inference_error "let rec f x = f f in f"
