@@ -56,9 +56,9 @@ let rec unify (t1 : ty) (t2 : ty) : subst =
     | (TyTuple ts1, TyTuple ts2) when List.length ts1 = List.length ts2 ->
         let compose_unify s t1 t2 = compose_subst (unify (apply_subst_ty s t1) (apply_subst_ty s t2)) s
         List.fold2 compose_unify [] ts1 ts2
-    | (TyVar tv, t) | (t, TyVar tv) -> type_error "unification error: tried to unify type %s with type %s which contains itself" (pretty_ty (TyVar tv)) (pretty_ty t)
-    | (TyTuple _, TyTuple _) -> type_error "unification error: tried to unify tuple type %s with tuple type %s, but they have different lengths" (pretty_ty t1) (pretty_ty t2)
-    | _ -> type_error "unification error: expected %s got %s" (pretty_ty t1) (pretty_ty t2)
+    | (TyVar tv, t) | (t, TyVar tv) -> type_error "tried to unify type %s with type %s which contains itself" (pretty_ty (TyVar tv)) (pretty_ty t)
+    | (TyTuple _, TyTuple _) -> type_error "tried to unify tuple type %s with tuple type %s, but they have different lengths" (pretty_ty t1) (pretty_ty t2)
+    | _ -> type_error "expected %s got %s" (pretty_ty t1) (pretty_ty t2)
 
 module TyVarGenerator =
     let mutable private next_ty_var : tyvar = 0
