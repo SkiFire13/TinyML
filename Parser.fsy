@@ -50,10 +50,6 @@ interactive:
     expr SEMICOLON2                     { IExpr $1 }
   | binding SEMICOLON2                  { IBinding $1 }
 
-expr:
-    expr_tuple_atom                         { $1 }
-  | BRA expr_tuple_atoms KET                { Tuple $2 }
-
 
 binding:
   | LET ID EQ expr                       { (false, $2, None, $4) }
@@ -86,39 +82,40 @@ expr_app_atom:
   | ID                                  { Var $1 }
   
   | BRA expr KET                        { $2 }
+  | BRA expr_tuple_atoms KET            { Tuple $2 }
 
-expr_tuple_atom:
-    expr_app_atom                               { $1 }
-  | expr_tuple_atom expr_app_atom %prec APP     { App ($1, $2) }
+expr:
+    expr_app_atom                       { $1 }
+  | expr expr_app_atom %prec APP        { App ($1, $2) }
 
-  | FUN parms ARROW expr                        { fold_params $2 $4 }
+  | FUN parms ARROW expr                { fold_params $2 $4 }
 
-  | binding IN expr                             { LetIn ($1, $3) }
+  | binding IN expr                     { LetIn ($1, $3) }
   
-  | NOT expr_tuple_atom							            { UnOp ("not", $2) }
-  | MINUS expr_tuple_atom %prec UMINUS  		            { UnOp ("-", $2) }
+  | NOT expr							              { UnOp ("not", $2) }
+  | MINUS expr %prec UMINUS  		        { UnOp ("-", $2) }
 
-  | expr_tuple_atom PLUS expr_tuple_atom					{ BinOp ($1, "+", $3) }
-  | expr_tuple_atom MINUS expr_tuple_atom					{ BinOp ($1, "-", $3) }
-  | expr_tuple_atom STAR expr_tuple_atom					{ BinOp ($1, "*", $3) }
-  | expr_tuple_atom SLASH expr_tuple_atom					{ BinOp ($1, "/", $3) }
-  | expr_tuple_atom PERCENT expr_tuple_atom				    { BinOp ($1, "%", $3) }
+  | expr PLUS expr					            { BinOp ($1, "+", $3) }
+  | expr MINUS expr					            { BinOp ($1, "-", $3) }
+  | expr STAR expr					            { BinOp ($1, "*", $3) }
+  | expr SLASH expr					            { BinOp ($1, "/", $3) }
+  | expr PERCENT expr				            { BinOp ($1, "%", $3) }
 
-  | expr_tuple_atom EQ expr_tuple_atom						{ BinOp ($1, "=", $3) }
-  | expr_tuple_atom NEQ expr_tuple_atom						{ BinOp ($1, "<>", $3) }
-  | expr_tuple_atom LT expr_tuple_atom						{ BinOp ($1, "<", $3) }
-  | expr_tuple_atom GT expr_tuple_atom						{ BinOp ($1, ">", $3) }
-  | expr_tuple_atom LEQ expr_tuple_atom						{ BinOp ($1, "<=", $3) }
-  | expr_tuple_atom GEQ expr_tuple_atom						{ BinOp ($1, ">=", $3) }
-  | expr_tuple_atom AND expr_tuple_atom                     { BinOp ($1, "and", $3) }
-  | expr_tuple_atom OR expr_tuple_atom				        { BinOp ($1, "or", $3) }
+  | expr EQ expr						            { BinOp ($1, "=", $3) }
+  | expr NEQ expr						            { BinOp ($1, "<>", $3) }
+  | expr LT expr					             	{ BinOp ($1, "<", $3) }
+  | expr GT expr					             	{ BinOp ($1, ">", $3) }
+  | expr LEQ expr					            	{ BinOp ($1, "<=", $3) }
+  | expr GEQ expr					             	{ BinOp ($1, ">=", $3) }
+  | expr AND expr                       { BinOp ($1, "and", $3) }
+  | expr OR expr				                { BinOp ($1, "or", $3) }
 
-  | IF expr THEN expr                                       { IfThenElse ($2, $4, None) }
-  | IF expr THEN expr ELSE expr                             { IfThenElse ($2, $4, Some $6) }
+  | IF expr THEN expr                   { IfThenElse ($2, $4, None) }
+  | IF expr THEN expr ELSE expr         { IfThenElse ($2, $4, Some $6) }
 
 expr_tuple_atoms:
-    expr_tuple_atom                             { [$1] }
-  | expr_tuple_atom COMMA expr_tuple_atoms      { $1 :: $3 }
+    expr                             { [$1] }
+  | expr COMMA expr_tuple_atoms      { $1 :: $3 }
 
 
 ty:

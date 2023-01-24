@@ -79,11 +79,10 @@ type nonTerminalId =
     | NONTERM__startprogram
     | NONTERM_program
     | NONTERM_interactive
-    | NONTERM_expr
     | NONTERM_binding
     | NONTERM_parms
     | NONTERM_expr_app_atom
-    | NONTERM_expr_tuple_atom
+    | NONTERM_expr
     | NONTERM_expr_tuple_atoms
     | NONTERM_ty
     | NONTERM_ty_tuple
