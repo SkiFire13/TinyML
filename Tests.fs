@@ -45,3 +45,8 @@ let ``Test literals`` () =
 let ``Test simple let`` () =
     assert_inferred_type_eq "let a = 1 in a" TyInt
     assert_inferred_type_eq "let a = \"foo\" in a" TyString
+
+[<Fact>]
+let ``Test simple lambda`` () =
+    assert_inferred_type_eq "fun x -> x" (TyArrow (TyVar 0, TyVar 0))
+    assert_inferred_type_eq "fun x -> x + 1" (TyArrow (TyInt, TyInt))
