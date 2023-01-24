@@ -124,7 +124,7 @@ expr_tuple_atoms:
 ty:
     ID                                  { TyName $1 }
   | ty ARROW ty                         { TyArrow ($1, $3) }
-  | ty_tuple                            { TyTuple $1 }
+  | ty STAR ty_tuple                    { TyTuple ($1 :: $3) }
   | BRA ty KET                          { $2 }
 
 ty_tuple:
