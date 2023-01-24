@@ -50,3 +50,8 @@ let ``Test simple let`` () =
 let ``Test simple lambda`` () =
     assert_inferred_type_eq "fun x -> x" (TyArrow (TyVar 0, TyVar 0))
     assert_inferred_type_eq "fun x -> x + 1" (TyArrow (TyInt, TyInt))
+
+[<Fact>]
+let ``Test simple application`` () =
+    assert_inferred_type_eq "let f x = x in f 2" TyInt
+    assert_inferred_type_eq "let f x y = x + y in f 2" (TyArrow (TyInt, TyInt))
