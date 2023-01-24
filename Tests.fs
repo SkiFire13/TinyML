@@ -117,5 +117,9 @@ let ``Test literal type error`` () =
     assert_inference_error "if true then 1 else 1.0"
 
 [<Fact>]
+let ``Test tuple types`` () =
+    assert_inference_error "let x : int * int = (1, 2, 3) in x"
+
+[<Fact>]
 let ``Test recursive type`` () =
     assert_inference_error "let rec f x = f f in f"
