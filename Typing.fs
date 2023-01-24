@@ -9,16 +9,18 @@ open Ast
 
 let type_error fmt = throw_formatted TypeError fmt
 
-let rec freevars_ty t =
+// Type inference
+
+let rec freevars_ty (t : ty) : tyvar Set =
     match t with
     | TyName _ -> Set.empty
     | TyArrow (t1, t2) -> (freevars_ty t1) + (freevars_ty t2)
     | TyVar tv -> Set.singleton tv
     | TyTuple ts -> List.fold (fun r t -> r + freevars_ty t) Set.empty ts
 
-let freevars_scheme (Forall (tvs, t)) = freevars_ty t - tvs
+let freevars_scheme (Forall (tvs, t) : scheme) : tyvar Set = freevars_ty t - tvs
 
-let freevars_scheme_env env =
+let freevars_scheme_env (env : scheme env) : tyvar Set =
     List.fold (fun fv (_, sch) -> fv + freevars_scheme sch) Set.empty env
 
 type subst = (tyvar * ty) list
@@ -59,8 +61,8 @@ let rec unify (t1 : ty) (t2 : ty) : subst =
     | _ -> type_error "unification error: expected %s got %s" (pretty_ty t1) (pretty_ty t2)
 
 module TyVarGenerator =
-    let mutable private next_ty_var: tyvar = 0
-    let fresh_ty_var (): ty =
+    let mutable private next_ty_var : tyvar = 0
+    let fresh_ty_var () : ty =
         let ty = TyVar next_ty_var
         next_ty_var <- next_ty_var + 1;
         ty
@@ -69,9 +71,6 @@ let fresh_ty_var = TyVarGenerator.fresh_ty_var
 let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
     let s = List.map (fun tv -> (tv, fresh_ty_var())) (Set.toList tvs)
     apply_subst_ty s ty
-
-// type inference
-//
 
 let gamma0 = [
     ("+", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
@@ -89,7 +88,6 @@ let gamma0 = [
     ("or", TyArrow (TyBool, TyArrow (TyBool, TyBool)))
 ]
 
-// TODO for exam
 let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     match e with
     | Lit (LInt _) -> TyInt, [] 
@@ -108,7 +106,6 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
         TyArrow (apply_subst_ty s tx, t), s
 
-        
     | App (e1, e2) ->
         let (t1, s1) = typeinfer_expr env e1
         let (t2, s2) = typeinfer_expr (apply_subst_env s1 env) e2
@@ -136,7 +133,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let t3, s3 = Option.defaultValue (TyUnit, []) (Option.map (typeinfer_expr env) e3o)
         let su = unify (apply_subst_ty s3 t2) t3
         apply_subst_ty su t3, compose_subst (compose_subst su s3) (compose_subst s2 sb)
-        
+
     | Tuple es ->
         let acc_ty_subst (ts, s) e =
             let t, sn = typeinfer_expr (apply_subst_env s env) e
@@ -168,7 +165,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         match t1, t2 with
         | TyInt, TyInt -> TyInt, s2
         | _ -> TyFloat, s2
-    
+
     | BinOp (e1, ("<" | "<=" | ">" | ">=" | "=" | "<>" as op), e2) ->
         let t1, s1 = typeinfer_expr env e1
         let s1b = compose_subst (unify t1 TyInt) s1
@@ -195,9 +192,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
 
     | _ -> failwithf "not implemented"
 
-// type checker
-//
-    
+// Type checker
 let rec typecheck_expr (env : ty env) (e : expr) : ty =
     match e with
     | Lit (LInt _) -> TyInt
