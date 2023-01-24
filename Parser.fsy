@@ -91,8 +91,7 @@ expr_tuple_atom:
     expr_app_atom                               { $1 }
   | expr_tuple_atom expr_app_atom %prec APP     { App ($1, $2) }
 
-  | FUN ID ARROW expr                           { Lambda ($2, None, $4) }
-  | FUN BRA ID COLON ty KET ARROW expr          { Lambda ($3, Some $5, $8) }
+  | FUN parms ARROW expr                        { fold_params $2 $4 }
 
   | binding IN expr                             { LetIn ($1, $3) }
   
