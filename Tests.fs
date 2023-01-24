@@ -32,5 +32,11 @@ let assert_inferred_type_eq str expected_ty =
     Assert.Equal ((normalize_ty expr_ty), (normalize_ty expected_ty))
 
 [<Fact>]
-let ``Test literal TyInt`` () =
+let ``Test literals`` () =
     assert_inferred_type_eq "1" TyInt
+    assert_inferred_type_eq "true" TyBool
+    assert_inferred_type_eq "false" TyBool
+    assert_inferred_type_eq "1.0" TyFloat
+    assert_inferred_type_eq "\"foo\"" TyString
+    assert_inferred_type_eq "'c'" TyChar
+    assert_inferred_type_eq "()" TyUnit
