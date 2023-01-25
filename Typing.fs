@@ -72,22 +72,6 @@ let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
     let s = List.map (fun tv -> (tv, fresh_ty_var())) (Set.toList tvs)
     apply_subst_ty s ty
 
-let gamma0 = [
-    ("+", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
-    ("-", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
-    ("/", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
-    ("%", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
-    ("*", TyArrow (TyInt, TyArrow (TyInt, TyInt)))
-    ("<", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
-    ("<=", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
-    (">", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
-    (">=", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
-    ("=", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
-    ("<>", TyArrow (TyInt, TyArrow (TyInt, TyBool)))
-    ("and", TyArrow (TyBool, TyArrow (TyBool, TyBool)))
-    ("or", TyArrow (TyBool, TyArrow (TyBool, TyBool)))
-]
-
 let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     match e with
     | Lit (LInt _) -> TyInt, [] 

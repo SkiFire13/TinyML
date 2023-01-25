@@ -42,7 +42,7 @@ let main_interpreter filename =
 
 let main_interactive () =
     printfn "entering interactive mode..."
-    let mutable tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) Typing.gamma0
+    let mutable tenv = []
     let mutable venv = []
     while true do
         trap <| fun () ->

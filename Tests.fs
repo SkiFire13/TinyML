@@ -9,13 +9,13 @@ open TinyML.Typing
 let parse_expr_from_string str = Parsing.parse_from_string SyntaxError str "TEST" (1, 1) Parser.program Lexer.tokenize Parser.tokenTagToTokenId
 
 let assert_inferred_type_eq str expected_ty =
-    let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) gamma0
+    let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) []
     let expr = parse_expr_from_string str
     let (expr_ty, _) = typeinfer_expr tenv expr
     Assert.Equal ((normalize_ty expr_ty), expected_ty)
 
 let assert_inference_error str =
-    let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) gamma0
+    let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) []
     let expr = parse_expr_from_string str
     try
         let _ = typeinfer_expr tenv expr
