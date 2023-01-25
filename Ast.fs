@@ -191,11 +191,36 @@ let rec pretty_expr e =
     | Tuple es ->        
         sprintf "(%s)" (pretty_tupled pretty_expr es)
 
-    | BinOp (e1, op, e2) -> sprintf "%s %s %s" (pretty_expr e1) op (pretty_expr e2)
+    | BinOp (e1, op, e2) ->
+        let prec op = 
+            match op with
+            | "or" | "and" -> 0
+            | "<" | "<=" | ">" | ">=" | "=" | "<>" -> 1
+            | "+" | "-" -> 2
+            | "*" | "/" | "%" -> 3
+            | _ -> unexpected_error "pretty_expr: invalid BinOp symbol"
+        let is_commut op =
+            match op with
+            | "or" | "and" | "+" | "*" -> true
+            | _ -> false
+        let e1 =
+            match e1 with
+            | Let _ | LetRec _ | IfThenElse _ -> sprintf "(%s)" (pretty_expr e1)
+            | BinOp (_, op2, _) when (prec op) > (prec op2) -> sprintf "(%s)" (pretty_expr e1)
+            | _ -> pretty_expr e1
+        let e2 =
+            match e2 with
+            | BinOp (_, op2, _) when (prec op) > (prec op2) -> sprintf "(%s)" (pretty_expr e2)
+            | BinOp (_, op2, _) when (prec op) = (prec op2) && not (is_commut op) -> sprintf "(%s)" (pretty_expr e2)
+            | _ -> pretty_expr e2
+        sprintf "%s %s %s" e1 op e2
     
-    | UnOp (op, e) -> sprintf "%s %s" op (pretty_expr e)
-    
-    | _ -> unexpected_error "pretty_expr: %s" (pretty_expr e)
+    | UnOp (op, e) ->
+        match e with
+        | BinOp _ -> sprintf "%s(%s)" op (pretty_expr e)
+        | _ -> sprintf "%s %s" op (pretty_expr e)
+
+    | _ -> unexpected_error "pretty_expr: entered unreachable match case"
 
 let rec pretty_value v =
     match v with
