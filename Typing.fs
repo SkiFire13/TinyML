@@ -139,7 +139,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let t2, s2 = typeinfer_expr ((f, sch) :: env) e2
         t2, compose_subst s2 sf
 
-    | BinOp (e1, ("+" | "-" | "/" | "%" | "*" as op), e2) ->
+    | BinOp (e1, ("+" | "-" | "/" | "%" | "*"), e2) ->
         let check_or_infer_num so e =
             let t, s = typeinfer_expr (apply_subst_env so env) e
             match t with
@@ -151,14 +151,14 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         | TyInt, TyInt -> TyInt, s2
         | _ -> TyFloat, s2
 
-    | BinOp (e1, ("<" | "<=" | ">" | ">=" | "=" | "<>" as op), e2) ->
+    | BinOp (e1, ("<" | "<=" | ">" | ">=" | "=" | "<>"), e2) ->
         let t1, s1 = typeinfer_expr env e1
         let s1b = compose_subst (unify t1 TyInt) s1
         let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
         let s2b = compose_subst (unify t2 TyInt) s2
         TyBool, compose_subst s2b s1b
 
-    | BinOp (e1, ("and" | "or" as op), e2) ->
+    | BinOp (e1, ("and" | "or"), e2) ->
         let t1, s1 = typeinfer_expr env e1
         let s1b = compose_subst (unify t1 TyBool) s1
         let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
@@ -191,7 +191,7 @@ let rec typecheck_expr (env : ty env) (e : expr) : ty =
         let _, t = List.find (fun (y, _) -> x = y) env
         t
 
-    | Lambda (x, None, _, e) -> unexpected_error "typecheck_expr: unannotated lambda is not supported"
+    | Lambda (_x, None, _, _e) -> unexpected_error "typecheck_expr: unannotated lambda is not supported"
     
     | Lambda (x, Some t1, tro, e) ->
         let t2 = typecheck_expr ((x, t1) :: env) e
@@ -232,7 +232,7 @@ let rec typecheck_expr (env : ty env) (e : expr) : ty =
     | Tuple es ->
         TyTuple (List.map (typecheck_expr env) es)
 
-    | LetRec (f, None, e1, e2) ->
+    | LetRec (_f, None, _e1, _e2) ->
         unexpected_error "typecheck_expr: unannotated let rec is not supported"
         
     | LetRec (f, Some tf, e1, e2) ->
