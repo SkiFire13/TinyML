@@ -12,7 +12,7 @@ let assert_inferred_type_eq str expected_ty =
     let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) gamma0
     let expr = parse_expr_from_string str
     let (expr_ty, _) = typeinfer_expr tenv expr
-    Assert.Equal ((normalize_ty expr_ty), (normalize_ty expected_ty))
+    Assert.Equal ((normalize_ty expr_ty), expected_ty)
 
 let assert_inference_error str =
     let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) gamma0
