@@ -156,12 +156,22 @@ let pretty_lit lit =
     | LBool false -> "false"
     | LUnit -> "()"
 
+let rec pretty_nested_lambdas_params e =
+    match e with
+    | Lambda (x, t, e) ->
+        let s, e = pretty_nested_lambdas_params e
+        match t with
+        | Some t -> sprintf "(%s : %s) %s" x (pretty_ty t) s, e
+        | None -> sprintf "%s %s" x s, e
+    | _ -> "", e
+
 let rec pretty_expr e =
     match e with
     | Lit lit -> pretty_lit lit
 
-    | Lambda (x, None, e) -> sprintf "fun %s -> %s" x (pretty_expr e)
-    | Lambda (x, Some t, e) -> sprintf "fun (%s : %s) -> %s" x (pretty_ty t) (pretty_expr e)
+    | Lambda _ -> 
+        let parms, e = pretty_nested_lambdas_params e
+        sprintf "fun %s-> %s" parms (pretty_expr e)
     
     | App (e1, e2) -> 
         match e2 with
@@ -171,16 +181,20 @@ let rec pretty_expr e =
     | Var x -> x
 
     | Let (x, None, e1, e2) ->
-        sprintf "let %s = %s in %s" x (pretty_expr e1) (pretty_expr e2)
+        let parms, e1 = pretty_nested_lambdas_params e1
+        sprintf "let %s %s= %s in %s" x parms (pretty_expr e1) (pretty_expr e2)
 
     | Let (x, Some t, e1, e2) ->
-        sprintf "let %s : %s = %s in %s" x (pretty_ty t) (pretty_expr e1) (pretty_expr e2)
+        let parms, e1 = pretty_nested_lambdas_params e1
+        sprintf "let %s %s: %s = %s in %s" x parms (pretty_ty t) (pretty_expr e1) (pretty_expr e2)
 
     | LetRec (x, None, e1, e2) ->
-        sprintf "let rec %s = %s in %s" x (pretty_expr e1) (pretty_expr e2)
+        let parms, e1 = pretty_nested_lambdas_params e1
+        sprintf "let rec %s %s= %s in %s" x parms (pretty_expr e1) (pretty_expr e2)
 
     | LetRec (x, Some tx, e1, e2) ->
-        sprintf "let rec %s : %s = %s in %s" x (pretty_ty tx) (pretty_expr e1) (pretty_expr e2)
+        let parms, e1 = pretty_nested_lambdas_params e1
+        sprintf "let rec %s %s: %s = %s in %s" x parms (pretty_ty tx) (pretty_expr e1) (pretty_expr e2)
 
     | IfThenElse (e1, e2, e3o) ->
         let s = sprintf "if %s then %s" (pretty_expr e1) (pretty_expr e2)
