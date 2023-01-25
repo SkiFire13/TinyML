@@ -105,9 +105,9 @@ let normalize_ty t =
             let s2, t2 = normalize_ty_inner s1 t2
             s2, TyArrow (t1, t2)
         | TyVar tv ->
-            match List.tryFind (fun (tvk, _) -> tvk = tv) s with
-            | Some (_, tvs) -> s, TyVar tvs
-            | None -> (tv, List.length s) :: s, TyVar (List.length s)
+            match List.tryFindIndex (fun tvk -> tvk = tv) s with
+            | Some idx -> s, TyVar idx
+            | None -> s @ [tv], TyVar (List.length s)
         | TyTuple ts ->
             let s, ts = List.fold (fun (s, ts) t -> let s, t = normalize_ty_inner s t in (s, ts @ [t])) (s, []) ts
             s, TyTuple ts
