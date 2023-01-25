@@ -65,7 +65,7 @@ type binding = bool * string * ty option * expr    // (is_recursive, id, optiona
 
 and expr = 
     | Lit of lit
-    | Lambda of string * ty option * expr
+    | Lambda of string * ty option * ty option * expr
     | App of expr * expr
     | Var of string
     | LetIn of binding * expr
@@ -74,8 +74,9 @@ and expr =
     | BinOp of expr * string * expr
     | UnOp of string * expr
 
-let fold_params parms e0 = 
-    List.foldBack (fun (id, tyo) e -> Lambda (id, tyo, e)) parms e0
+let fold_params parms e0 tyr =
+    let e, _ = List.foldBack (fun (id, tyo) (e, tyr) -> Lambda (id, tyo, tyr, e), None) parms (e0, tyr)
+    e
 
 
 let (|Let|_|) = function 
@@ -158,7 +159,11 @@ let pretty_lit lit =
 
 let rec pretty_nested_lambdas_params e =
     match e with
-    | Lambda (x, t, e) ->
+    | Lambda (x, t, Some tr, e) ->
+        match t with
+        | Some t -> sprintf "(%s : %s) : %s " x (pretty_ty t) (pretty_ty tr), e
+        | None -> sprintf "%s : %s " x (pretty_ty tr), e
+    | Lambda (x, t, None, e) ->
         let s, e = pretty_nested_lambdas_params e
         match t with
         | Some t -> sprintf "(%s : %s) %s" x (pretty_ty t) s, e

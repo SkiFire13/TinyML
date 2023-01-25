@@ -101,10 +101,11 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let _, sch = List.find (fun (n, _) -> n = x) env
         refresh_scheme sch, []
 
-    | Lambda (x, txo, e) ->
+    | Lambda (x, txo, tro, e) ->
         let tx = Option.defaultWith fresh_ty_var txo
         let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
-        TyArrow (apply_subst_ty s tx, t), s
+        let s = Option.defaultValue s (Option.map (fun tr -> compose_subst (unify t tr) s) tro)
+        TyArrow (apply_subst_ty s tx, apply_subst_ty s t), s
 
     | App (e1, e2) ->
         let (t1, s1) = typeinfer_expr env e1
@@ -206,10 +207,13 @@ let rec typecheck_expr (env : ty env) (e : expr) : ty =
         let _, t = List.find (fun (y, _) -> x = y) env
         t
 
-    | Lambda (x, None, e) -> unexpected_error "typecheck_expr: unannotated lambda is not supported"
+    | Lambda (x, None, _, e) -> unexpected_error "typecheck_expr: unannotated lambda is not supported"
     
-    | Lambda (x, Some t1, e) ->
+    | Lambda (x, Some t1, tro, e) ->
         let t2 = typecheck_expr ((x, t1) :: env) e
+        match tro with
+        | None -> ()
+        | Some tr -> if tr <> t2 then type_error "type annotation in let binding is wrong: exptected %s, but got %s" (pretty_ty tr) (pretty_ty t1)
         TyArrow (t1, t2)
 
     | App (e1, e2) ->

@@ -15,7 +15,7 @@ let rec eval_expr (env : value env) (e : expr) : value =
         let _, v = List.find (fun (y, _) -> x = y) env
         v
 
-    | Lambda (x, _, e) -> Closure (env, x, e)
+    | Lambda (x, _, _, e) -> Closure (env, x, e)
 
     | App (e1, e2) ->
         let v1 = eval_expr env e1

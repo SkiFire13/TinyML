@@ -409,7 +409,7 @@ let _fsyacc_reductions = lazy [|
                 (
                    (
 # 56 "Parser.fsy"
-                                                                (false, _2, None, fold_params _3 _5) 
+                                                                (false, _2, None, fold_params _3 _5 None) 
                    )
 # 56 "Parser.fsy"
                  : 'gentype_binding));
@@ -436,7 +436,7 @@ let _fsyacc_reductions = lazy [|
                 (
                    (
 # 59 "Parser.fsy"
-                                                                (false, _2, Some _5, fold_params _3 _7) 
+                                                                (false, _2, None, fold_params _3 _7 (Some _5)) 
                    )
 # 59 "Parser.fsy"
                  : 'gentype_binding));
@@ -461,7 +461,7 @@ let _fsyacc_reductions = lazy [|
                 (
                    (
 # 62 "Parser.fsy"
-                                                                (true, _3, None, fold_params _4 _6 )
+                                                                (true, _3, None, fold_params _4 _6 None) 
                    )
 # 62 "Parser.fsy"
                  : 'gentype_binding));
@@ -475,7 +475,7 @@ let _fsyacc_reductions = lazy [|
                 (
                    (
 # 64 "Parser.fsy"
-                                                                (true, _3, Some _6, fold_params _4 _8) 
+                                                                (true, _3, None, fold_params _4 _8 (Some _6)) 
                    )
 # 64 "Parser.fsy"
                  : 'gentype_binding));
@@ -678,7 +678,7 @@ let _fsyacc_reductions = lazy [|
                 (
                    (
 # 91 "Parser.fsy"
-                                                               fold_params _2 _4 
+                                                               fold_params _2 _4 None 
                    )
 # 91 "Parser.fsy"
                  : 'gentype_expr));
