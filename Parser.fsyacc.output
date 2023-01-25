@@ -762,7 +762,7 @@ state 17:  items:    binding -> 'LET' 'ID' 'COLON' . ty 'EQ' expr
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -782,7 +782,7 @@ state 17:  items:    binding -> 'LET' 'ID' 'COLON' . ty 'EQ' expr
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
@@ -790,15 +790,15 @@ state 17:  items:    binding -> 'LET' 'ID' 'COLON' . ty 'EQ' expr
     action '#' (noprec):   error
     action '$$' (noprec):   error
   immediate action: <none>  gotos:    goto ty: 18
+    goto ty_tuple_atom: 109
 state 18:  items:    binding -> 'LET' 'ID' 'COLON' ty . 'EQ' expr
-    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
+    ty_tuple_atom -> ty . 'ARROW' ty
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
     action 'ELSE' (noprec):   error
     action 'FUN' (noprec):   error
-    action 'ARROW' (explicit right 9991):   shift 113
+    action 'ARROW' (explicit right 9991):   shift 119
     action 'LET' (noprec):   error
     action 'REC' (noprec):   error
     action 'IN' (noprec):   error
@@ -808,7 +808,7 @@ state 18:  items:    binding -> 'LET' 'ID' 'COLON' ty . 'EQ' expr
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
-    action 'STAR' (explicit left 9996):   shift 114
+    action 'STAR' (noprec):   error
     action 'SLASH' (noprec):   error
     action 'PERCENT' (noprec):   error
     action 'LT' (noprec):   error
@@ -939,7 +939,7 @@ state 21:  items:    binding -> 'LET' 'ID' parms 'COLON' . ty 'EQ' expr
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -959,7 +959,7 @@ state 21:  items:    binding -> 'LET' 'ID' parms 'COLON' . ty 'EQ' expr
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
@@ -967,15 +967,15 @@ state 21:  items:    binding -> 'LET' 'ID' parms 'COLON' . ty 'EQ' expr
     action '#' (noprec):   error
     action '$$' (noprec):   error
   immediate action: <none>  gotos:    goto ty: 22
+    goto ty_tuple_atom: 109
 state 22:  items:    binding -> 'LET' 'ID' parms 'COLON' ty . 'EQ' expr
-    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
+    ty_tuple_atom -> ty . 'ARROW' ty
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
     action 'ELSE' (noprec):   error
     action 'FUN' (noprec):   error
-    action 'ARROW' (explicit right 9991):   shift 113
+    action 'ARROW' (explicit right 9991):   shift 119
     action 'LET' (noprec):   error
     action 'REC' (noprec):   error
     action 'IN' (noprec):   error
@@ -985,7 +985,7 @@ state 22:  items:    binding -> 'LET' 'ID' parms 'COLON' ty . 'EQ' expr
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
-    action 'STAR' (explicit left 9996):   shift 114
+    action 'STAR' (noprec):   error
     action 'SLASH' (noprec):   error
     action 'PERCENT' (noprec):   error
     action 'LT' (noprec):   error
@@ -1433,7 +1433,7 @@ state 32:  items:    binding -> 'LET' 'REC' 'ID' parms 'COLON' . ty 'EQ' expr
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -1453,7 +1453,7 @@ state 32:  items:    binding -> 'LET' 'REC' 'ID' parms 'COLON' . ty 'EQ' expr
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
@@ -1461,15 +1461,15 @@ state 32:  items:    binding -> 'LET' 'REC' 'ID' parms 'COLON' . ty 'EQ' expr
     action '#' (noprec):   error
     action '$$' (noprec):   error
   immediate action: <none>  gotos:    goto ty: 33
+    goto ty_tuple_atom: 109
 state 33:  items:    binding -> 'LET' 'REC' 'ID' parms 'COLON' ty . 'EQ' expr
-    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
+    ty_tuple_atom -> ty . 'ARROW' ty
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
     action 'ELSE' (noprec):   error
     action 'FUN' (noprec):   error
-    action 'ARROW' (explicit right 9991):   shift 113
+    action 'ARROW' (explicit right 9991):   shift 119
     action 'LET' (noprec):   error
     action 'REC' (noprec):   error
     action 'IN' (noprec):   error
@@ -1479,7 +1479,7 @@ state 33:  items:    binding -> 'LET' 'REC' 'ID' parms 'COLON' ty . 'EQ' expr
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
-    action 'STAR' (explicit left 9996):   shift 114
+    action 'STAR' (noprec):   error
     action 'SLASH' (noprec):   error
     action 'PERCENT' (noprec):   error
     action 'LT' (noprec):   error
@@ -1610,7 +1610,7 @@ state 36:  items:    binding -> 'LET' 'REC' 'ID' 'COLON' . ty 'EQ' expr
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -1630,7 +1630,7 @@ state 36:  items:    binding -> 'LET' 'REC' 'ID' 'COLON' . ty 'EQ' expr
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
@@ -1638,15 +1638,15 @@ state 36:  items:    binding -> 'LET' 'REC' 'ID' 'COLON' . ty 'EQ' expr
     action '#' (noprec):   error
     action '$$' (noprec):   error
   immediate action: <none>  gotos:    goto ty: 37
+    goto ty_tuple_atom: 109
 state 37:  items:    binding -> 'LET' 'REC' 'ID' 'COLON' ty . 'EQ' expr
-    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
+    ty_tuple_atom -> ty . 'ARROW' ty
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
     action 'ELSE' (noprec):   error
     action 'FUN' (noprec):   error
-    action 'ARROW' (explicit right 9991):   shift 113
+    action 'ARROW' (explicit right 9991):   shift 119
     action 'LET' (noprec):   error
     action 'REC' (noprec):   error
     action 'IN' (noprec):   error
@@ -1656,7 +1656,7 @@ state 37:  items:    binding -> 'LET' 'REC' 'ID' 'COLON' ty . 'EQ' expr
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
-    action 'STAR' (explicit left 9996):   shift 114
+    action 'STAR' (noprec):   error
     action 'SLASH' (noprec):   error
     action 'PERCENT' (noprec):   error
     action 'LT' (noprec):   error
@@ -1909,7 +1909,7 @@ state 41:  items:    parms -> 'BRA' . 'ID' 'COLON' ty 'KET'
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -1929,7 +1929,7 @@ state 41:  items:    parms -> 'BRA' . 'ID' 'COLON' ty 'KET'
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
@@ -1937,16 +1937,16 @@ state 41:  items:    parms -> 'BRA' . 'ID' 'COLON' ty 'KET'
     action '#' (noprec):   error
     action '$$' (noprec):   error
   immediate action: <none>  gotos:    goto ty: 44
+    goto ty_tuple_atom: 109
 state 44:  items:    parms -> 'BRA' 'ID' 'COLON' ty . 'KET'
     parms -> 'BRA' 'ID' 'COLON' ty . 'KET' parms
-    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
+    ty_tuple_atom -> ty . 'ARROW' ty
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
     action 'ELSE' (noprec):   error
     action 'FUN' (noprec):   error
-    action 'ARROW' (explicit right 9991):   shift 113
+    action 'ARROW' (explicit right 9991):   shift 119
     action 'LET' (noprec):   error
     action 'REC' (noprec):   error
     action 'IN' (noprec):   error
@@ -1956,7 +1956,7 @@ state 44:  items:    parms -> 'BRA' 'ID' 'COLON' ty . 'KET'
     action 'KET' (noprec):   shift 45
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
-    action 'STAR' (explicit left 9996):   shift 114
+    action 'STAR' (noprec):   error
     action 'SLASH' (noprec):   error
     action 'PERCENT' (noprec):   error
     action 'LT' (noprec):   error
@@ -4885,105 +4885,308 @@ state 108:  items:    expr_tuple_atoms -> expr 'COMMA' expr_tuple_atoms .
     action 'error' (explicit left 9990):   reduce expr_tuple_atoms --> expr 'COMMA' expr_tuple_atoms
     action '#' (explicit left 9990):   reduce expr_tuple_atoms --> expr 'COMMA' expr_tuple_atoms
     action '$$' (explicit left 9990):   reduce expr_tuple_atoms --> expr 'COMMA' expr_tuple_atoms
-  immediate action:   reduce expr_tuple_atoms --> expr 'COMMA' expr_tuple_atoms  gotos:state 109:  items:    ty -> 'ID' . 
-  actions:    action 'EOF' (noprec):   reduce ty --> 'ID'
-    action 'IF' (noprec):   reduce ty --> 'ID'
-    action 'THEN' (noprec):   reduce ty --> 'ID'
-    action 'ELSE' (noprec):   reduce ty --> 'ID'
-    action 'FUN' (noprec):   reduce ty --> 'ID'
-    action 'ARROW' (noprec):   reduce ty --> 'ID'
-    action 'LET' (noprec):   reduce ty --> 'ID'
-    action 'REC' (noprec):   reduce ty --> 'ID'
-    action 'IN' (noprec):   reduce ty --> 'ID'
-    action 'TRUE' (noprec):   reduce ty --> 'ID'
-    action 'FALSE' (noprec):   reduce ty --> 'ID'
-    action 'BRA' (noprec):   reduce ty --> 'ID'
-    action 'KET' (noprec):   reduce ty --> 'ID'
-    action 'PLUS' (noprec):   reduce ty --> 'ID'
-    action 'MINUS' (noprec):   reduce ty --> 'ID'
-    action 'STAR' (noprec):   reduce ty --> 'ID'
-    action 'SLASH' (noprec):   reduce ty --> 'ID'
-    action 'PERCENT' (noprec):   reduce ty --> 'ID'
-    action 'LT' (noprec):   reduce ty --> 'ID'
-    action 'GT' (noprec):   reduce ty --> 'ID'
-    action 'LEQ' (noprec):   reduce ty --> 'ID'
-    action 'GEQ' (noprec):   reduce ty --> 'ID'
-    action 'EQ' (noprec):   reduce ty --> 'ID'
-    action 'NEQ' (noprec):   reduce ty --> 'ID'
-    action 'AND' (noprec):   reduce ty --> 'ID'
-    action 'OR' (noprec):   reduce ty --> 'ID'
-    action 'NOT' (noprec):   reduce ty --> 'ID'
-    action 'COLON' (noprec):   reduce ty --> 'ID'
-    action 'SEMICOLON2' (noprec):   reduce ty --> 'ID'
-    action 'COMMA' (noprec):   reduce ty --> 'ID'
-    action 'STRING' (noprec):   reduce ty --> 'ID'
-    action 'ID' (noprec):   reduce ty --> 'ID'
-    action 'CHAR' (noprec):   reduce ty --> 'ID'
-    action 'FLOAT' (noprec):   reduce ty --> 'ID'
-    action 'INT' (noprec):   reduce ty --> 'ID'
-    action 'error' (noprec):   reduce ty --> 'ID'
-    action '#' (noprec):   reduce ty --> 'ID'
-    action '$$' (noprec):   reduce ty --> 'ID'
-  immediate action:   reduce ty --> 'ID'  gotos:state 110:  items:    ty -> ty . 'ARROW' ty
-    ty -> ty 'ARROW' ty . 
-    ty -> ty . 'STAR' ty_tuple
-  actions:    action 'EOF' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'IF' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'THEN' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'ELSE' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'FUN' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'ARROW' (explicit right 9991):   shift 113
-    action 'LET' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'REC' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'IN' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'TRUE' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'FALSE' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'BRA' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'KET' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'PLUS' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'MINUS' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'STAR' (explicit left 9996):   shift 114
-    action 'SLASH' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'PERCENT' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'LT' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'GT' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'LEQ' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'GEQ' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'EQ' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'NEQ' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'AND' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'OR' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'NOT' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'COLON' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'SEMICOLON2' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'COMMA' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'STRING' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'ID' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'CHAR' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'FLOAT' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'INT' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action 'error' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action '#' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-    action '$$' (explicit right 9991):   reduce ty --> ty 'ARROW' ty
-  immediate action: <none>  gotos:state 111:  items:    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
-    ty -> 'BRA' ty . 'KET'
+  immediate action:   reduce expr_tuple_atoms --> expr 'COMMA' expr_tuple_atoms  gotos:state 109:  items:    ty -> ty_tuple_atom . 'STAR' ty_tuple
+    ty -> ty_tuple_atom . 
+  actions:    action 'EOF' (noprec):   reduce ty --> ty_tuple_atom
+    action 'IF' (noprec):   reduce ty --> ty_tuple_atom
+    action 'THEN' (noprec):   reduce ty --> ty_tuple_atom
+    action 'ELSE' (noprec):   reduce ty --> ty_tuple_atom
+    action 'FUN' (noprec):   reduce ty --> ty_tuple_atom
+    action 'ARROW' (noprec):   reduce ty --> ty_tuple_atom
+    action 'LET' (noprec):   reduce ty --> ty_tuple_atom
+    action 'REC' (noprec):   reduce ty --> ty_tuple_atom
+    action 'IN' (noprec):   reduce ty --> ty_tuple_atom
+    action 'TRUE' (noprec):   reduce ty --> ty_tuple_atom
+    action 'FALSE' (noprec):   reduce ty --> ty_tuple_atom
+    action 'BRA' (noprec):   reduce ty --> ty_tuple_atom
+    action 'KET' (noprec):   reduce ty --> ty_tuple_atom
+    action 'PLUS' (noprec):   reduce ty --> ty_tuple_atom
+    action 'MINUS' (noprec):   reduce ty --> ty_tuple_atom
+    action 'STAR' (explicit left 9996):   shift 111
+    action 'SLASH' (noprec):   reduce ty --> ty_tuple_atom
+    action 'PERCENT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'LT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'GT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'LEQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'GEQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'EQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'NEQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'AND' (noprec):   reduce ty --> ty_tuple_atom
+    action 'OR' (noprec):   reduce ty --> ty_tuple_atom
+    action 'NOT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'COLON' (noprec):   reduce ty --> ty_tuple_atom
+    action 'SEMICOLON2' (noprec):   reduce ty --> ty_tuple_atom
+    action 'COMMA' (noprec):   reduce ty --> ty_tuple_atom
+    action 'STRING' (noprec):   reduce ty --> ty_tuple_atom
+    action 'ID' (noprec):   reduce ty --> ty_tuple_atom
+    action 'CHAR' (noprec):   reduce ty --> ty_tuple_atom
+    action 'FLOAT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'INT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'error' (noprec):   reduce ty --> ty_tuple_atom
+    action '#' (noprec):   reduce ty --> ty_tuple_atom
+    action '$$' (noprec):   reduce ty --> ty_tuple_atom
+  immediate action: <none>  gotos:state 110:  items:    ty -> ty_tuple_atom . 'STAR' ty_tuple
+    ty -> ty_tuple_atom . 
+    ty_tuple -> ty_tuple_atom . 
+    ty_tuple -> ty_tuple_atom . 'STAR' ty_tuple
+  actions:    action 'EOF' (noprec):   reduce ty --> ty_tuple_atom
+    action 'IF' (noprec):   reduce ty --> ty_tuple_atom
+    action 'THEN' (noprec):   reduce ty --> ty_tuple_atom
+    action 'ELSE' (noprec):   reduce ty --> ty_tuple_atom
+    action 'FUN' (noprec):   reduce ty --> ty_tuple_atom
+    action 'ARROW' (noprec):   reduce ty --> ty_tuple_atom
+    action 'LET' (noprec):   reduce ty --> ty_tuple_atom
+    action 'REC' (noprec):   reduce ty --> ty_tuple_atom
+    action 'IN' (noprec):   reduce ty --> ty_tuple_atom
+    action 'TRUE' (noprec):   reduce ty --> ty_tuple_atom
+    action 'FALSE' (noprec):   reduce ty --> ty_tuple_atom
+    action 'BRA' (noprec):   reduce ty --> ty_tuple_atom
+    action 'KET' (noprec):   reduce ty_tuple --> ty_tuple_atom
+    action 'PLUS' (noprec):   reduce ty --> ty_tuple_atom
+    action 'MINUS' (noprec):   reduce ty --> ty_tuple_atom
+    action 'STAR' (explicit left 9996):   shift 112
+    action 'SLASH' (noprec):   reduce ty --> ty_tuple_atom
+    action 'PERCENT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'LT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'GT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'LEQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'GEQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'EQ' (noprec):   reduce ty_tuple --> ty_tuple_atom
+    action 'NEQ' (noprec):   reduce ty --> ty_tuple_atom
+    action 'AND' (noprec):   reduce ty --> ty_tuple_atom
+    action 'OR' (noprec):   reduce ty --> ty_tuple_atom
+    action 'NOT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'COLON' (noprec):   reduce ty --> ty_tuple_atom
+    action 'SEMICOLON2' (noprec):   reduce ty --> ty_tuple_atom
+    action 'COMMA' (noprec):   reduce ty --> ty_tuple_atom
+    action 'STRING' (noprec):   reduce ty --> ty_tuple_atom
+    action 'ID' (noprec):   reduce ty --> ty_tuple_atom
+    action 'CHAR' (noprec):   reduce ty --> ty_tuple_atom
+    action 'FLOAT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'INT' (noprec):   reduce ty --> ty_tuple_atom
+    action 'error' (noprec):   reduce ty --> ty_tuple_atom
+    action '#' (noprec):   reduce ty --> ty_tuple_atom
+    action '$$' (noprec):   reduce ty --> ty_tuple_atom
+  immediate action: <none>  gotos:state 111:  items:    ty -> ty_tuple_atom 'STAR' . ty_tuple
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
     action 'ELSE' (noprec):   error
     action 'FUN' (noprec):   error
-    action 'ARROW' (explicit right 9991):   shift 113
+    action 'ARROW' (noprec):   error
+    action 'LET' (noprec):   error
+    action 'REC' (noprec):   error
+    action 'IN' (noprec):   error
+    action 'TRUE' (noprec):   error
+    action 'FALSE' (noprec):   error
+    action 'BRA' (noprec):   shift 120
+    action 'KET' (noprec):   error
+    action 'PLUS' (noprec):   error
+    action 'MINUS' (noprec):   error
+    action 'STAR' (noprec):   error
+    action 'SLASH' (noprec):   error
+    action 'PERCENT' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'LEQ' (noprec):   error
+    action 'GEQ' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'NOT' (noprec):   error
+    action 'COLON' (noprec):   error
+    action 'SEMICOLON2' (noprec):   error
+    action 'COMMA' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'ID' (noprec):   shift 115
+    action 'CHAR' (noprec):   error
+    action 'FLOAT' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+  immediate action: <none>  gotos:    goto ty: 116
+    goto ty_tuple_atom: 110
+    goto ty_tuple: 113
+state 112:  items:    ty -> ty_tuple_atom 'STAR' . ty_tuple
+    ty_tuple -> ty_tuple_atom 'STAR' . ty_tuple
+  actions:    action 'EOF' (noprec):   error
+    action 'IF' (noprec):   error
+    action 'THEN' (noprec):   error
+    action 'ELSE' (noprec):   error
+    action 'FUN' (noprec):   error
+    action 'ARROW' (noprec):   error
+    action 'LET' (noprec):   error
+    action 'REC' (noprec):   error
+    action 'IN' (noprec):   error
+    action 'TRUE' (noprec):   error
+    action 'FALSE' (noprec):   error
+    action 'BRA' (noprec):   shift 120
+    action 'KET' (noprec):   error
+    action 'PLUS' (noprec):   error
+    action 'MINUS' (noprec):   error
+    action 'STAR' (noprec):   error
+    action 'SLASH' (noprec):   error
+    action 'PERCENT' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'LEQ' (noprec):   error
+    action 'GEQ' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'NOT' (noprec):   error
+    action 'COLON' (noprec):   error
+    action 'SEMICOLON2' (noprec):   error
+    action 'COMMA' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'ID' (noprec):   shift 115
+    action 'CHAR' (noprec):   error
+    action 'FLOAT' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+  immediate action: <none>  gotos:    goto ty: 116
+    goto ty_tuple_atom: 110
+    goto ty_tuple: 114
+state 113:  items:    ty -> ty_tuple_atom 'STAR' ty_tuple . 
+  actions:    action 'EOF' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'IF' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'THEN' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'ELSE' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'FUN' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'ARROW' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'LET' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'REC' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'IN' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'TRUE' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'FALSE' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'BRA' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'KET' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'PLUS' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'MINUS' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'STAR' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'SLASH' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'PERCENT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'LT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'GT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'LEQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'GEQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'EQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'NEQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'AND' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'OR' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'NOT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'COLON' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'SEMICOLON2' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'COMMA' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'STRING' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'ID' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'CHAR' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'FLOAT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'INT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'error' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action '#' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action '$$' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+  immediate action:   reduce ty --> ty_tuple_atom 'STAR' ty_tuple  gotos:state 114:  items:    ty -> ty_tuple_atom 'STAR' ty_tuple . 
+    ty_tuple -> ty_tuple_atom 'STAR' ty_tuple . 
+  actions:    action 'EOF' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'IF' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'THEN' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'ELSE' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'FUN' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'ARROW' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'LET' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'REC' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'IN' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'TRUE' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'FALSE' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'BRA' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'KET' (explicit left 9996):   reduce ty_tuple --> ty_tuple_atom 'STAR' ty_tuple
+    action 'PLUS' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'MINUS' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'STAR' (explicit left 9996):   reduce ty_tuple --> ty_tuple_atom 'STAR' ty_tuple
+    action 'SLASH' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'PERCENT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'LT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'GT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'LEQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'GEQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'EQ' (explicit left 9996):   reduce ty_tuple --> ty_tuple_atom 'STAR' ty_tuple
+    action 'NEQ' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'AND' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'OR' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'NOT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'COLON' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'SEMICOLON2' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'COMMA' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'STRING' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'ID' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'CHAR' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'FLOAT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'INT' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action 'error' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action '#' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+    action '$$' (explicit left 9996):   reduce ty --> ty_tuple_atom 'STAR' ty_tuple
+  immediate action: <none>  gotos:state 115:  items:    ty_tuple_atom -> 'ID' . 
+  actions:    action 'EOF' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'IF' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'THEN' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'ELSE' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'FUN' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'ARROW' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'LET' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'REC' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'IN' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'TRUE' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'FALSE' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'BRA' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'KET' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'PLUS' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'MINUS' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'STAR' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'SLASH' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'PERCENT' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'LT' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'GT' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'LEQ' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'GEQ' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'EQ' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'NEQ' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'AND' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'OR' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'NOT' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'COLON' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'SEMICOLON2' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'COMMA' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'STRING' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'ID' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'CHAR' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'FLOAT' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'INT' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action 'error' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action '#' (noprec):   reduce ty_tuple_atom --> 'ID'
+    action '$$' (noprec):   reduce ty_tuple_atom --> 'ID'
+  immediate action:   reduce ty_tuple_atom --> 'ID'  gotos:state 116:  items:    ty_tuple_atom -> ty . 'ARROW' ty
+  actions:    action 'EOF' (noprec):   error
+    action 'IF' (noprec):   error
+    action 'THEN' (noprec):   error
+    action 'ELSE' (noprec):   error
+    action 'FUN' (noprec):   error
+    action 'ARROW' (explicit right 9991):   shift 119
     action 'LET' (noprec):   error
     action 'REC' (noprec):   error
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
     action 'BRA' (noprec):   error
-    action 'KET' (noprec):   shift 119
+    action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
-    action 'STAR' (explicit left 9996):   shift 114
+    action 'STAR' (noprec):   error
     action 'SLASH' (noprec):   error
     action 'PERCENT' (noprec):   error
     action 'LT' (noprec):   error
@@ -5006,49 +5209,87 @@ state 108:  items:    expr_tuple_atoms -> expr 'COMMA' expr_tuple_atoms .
     action 'error' (noprec):   error
     action '#' (noprec):   error
     action '$$' (noprec):   error
-  immediate action: <none>  gotos:state 112:  items:    ty -> ty . 'ARROW' ty
-    ty -> ty . 'STAR' ty_tuple
-    ty_tuple -> ty . 
-    ty_tuple -> ty . 'STAR' ty_tuple
-  actions:    action 'EOF' (noprec):   reduce ty_tuple --> ty
-    action 'IF' (noprec):   reduce ty_tuple --> ty
-    action 'THEN' (noprec):   reduce ty_tuple --> ty
-    action 'ELSE' (noprec):   reduce ty_tuple --> ty
-    action 'FUN' (noprec):   reduce ty_tuple --> ty
-    action 'ARROW' (explicit right 9991):   shift 113
-    action 'LET' (noprec):   reduce ty_tuple --> ty
-    action 'REC' (noprec):   reduce ty_tuple --> ty
-    action 'IN' (noprec):   reduce ty_tuple --> ty
-    action 'TRUE' (noprec):   reduce ty_tuple --> ty
-    action 'FALSE' (noprec):   reduce ty_tuple --> ty
-    action 'BRA' (noprec):   reduce ty_tuple --> ty
-    action 'KET' (noprec):   reduce ty_tuple --> ty
-    action 'PLUS' (noprec):   reduce ty_tuple --> ty
-    action 'MINUS' (noprec):   reduce ty_tuple --> ty
-    action 'STAR' (explicit left 9996):   shift 115
-    action 'SLASH' (noprec):   reduce ty_tuple --> ty
-    action 'PERCENT' (noprec):   reduce ty_tuple --> ty
-    action 'LT' (noprec):   reduce ty_tuple --> ty
-    action 'GT' (noprec):   reduce ty_tuple --> ty
-    action 'LEQ' (noprec):   reduce ty_tuple --> ty
-    action 'GEQ' (noprec):   reduce ty_tuple --> ty
-    action 'EQ' (noprec):   reduce ty_tuple --> ty
-    action 'NEQ' (noprec):   reduce ty_tuple --> ty
-    action 'AND' (noprec):   reduce ty_tuple --> ty
-    action 'OR' (noprec):   reduce ty_tuple --> ty
-    action 'NOT' (noprec):   reduce ty_tuple --> ty
-    action 'COLON' (noprec):   reduce ty_tuple --> ty
-    action 'SEMICOLON2' (noprec):   reduce ty_tuple --> ty
-    action 'COMMA' (noprec):   reduce ty_tuple --> ty
-    action 'STRING' (noprec):   reduce ty_tuple --> ty
-    action 'ID' (noprec):   reduce ty_tuple --> ty
-    action 'CHAR' (noprec):   reduce ty_tuple --> ty
-    action 'FLOAT' (noprec):   reduce ty_tuple --> ty
-    action 'INT' (noprec):   reduce ty_tuple --> ty
-    action 'error' (noprec):   reduce ty_tuple --> ty
-    action '#' (noprec):   reduce ty_tuple --> ty
-    action '$$' (noprec):   reduce ty_tuple --> ty
-  immediate action: <none>  gotos:state 113:  items:    ty -> ty 'ARROW' . ty
+  immediate action: <none>  gotos:state 117:  items:    ty_tuple_atom -> ty . 'ARROW' ty
+    ty_tuple_atom -> ty 'ARROW' ty . 
+  actions:    action 'EOF' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'IF' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'THEN' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'ELSE' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'FUN' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'ARROW' (explicit right 9991):   shift 119
+    action 'LET' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'REC' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'IN' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'TRUE' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'FALSE' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'BRA' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'KET' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'PLUS' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'MINUS' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'STAR' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'SLASH' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'PERCENT' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'LT' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'GT' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'LEQ' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'GEQ' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'EQ' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'NEQ' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'AND' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'OR' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'NOT' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'COLON' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'SEMICOLON2' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'COMMA' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'STRING' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'ID' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'CHAR' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'FLOAT' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'INT' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action 'error' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action '#' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+    action '$$' (explicit right 9991):   reduce ty_tuple_atom --> ty 'ARROW' ty
+  immediate action: <none>  gotos:state 118:  items:    ty_tuple_atom -> ty . 'ARROW' ty
+    ty_tuple_atom -> 'BRA' ty . 'KET'
+  actions:    action 'EOF' (noprec):   error
+    action 'IF' (noprec):   error
+    action 'THEN' (noprec):   error
+    action 'ELSE' (noprec):   error
+    action 'FUN' (noprec):   error
+    action 'ARROW' (explicit right 9991):   shift 119
+    action 'LET' (noprec):   error
+    action 'REC' (noprec):   error
+    action 'IN' (noprec):   error
+    action 'TRUE' (noprec):   error
+    action 'FALSE' (noprec):   error
+    action 'BRA' (noprec):   error
+    action 'KET' (noprec):   shift 121
+    action 'PLUS' (noprec):   error
+    action 'MINUS' (noprec):   error
+    action 'STAR' (noprec):   error
+    action 'SLASH' (noprec):   error
+    action 'PERCENT' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'LEQ' (noprec):   error
+    action 'GEQ' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'NOT' (noprec):   error
+    action 'COLON' (noprec):   error
+    action 'SEMICOLON2' (noprec):   error
+    action 'COMMA' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'CHAR' (noprec):   error
+    action 'FLOAT' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+  immediate action: <none>  gotos:state 119:  items:    ty_tuple_atom -> ty 'ARROW' . ty
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
@@ -5060,7 +5301,7 @@ state 108:  items:    expr_tuple_atoms -> expr 'COMMA' expr_tuple_atoms .
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -5080,15 +5321,16 @@ state 108:  items:    expr_tuple_atoms -> expr 'COMMA' expr_tuple_atoms .
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
     action 'error' (noprec):   error
     action '#' (noprec):   error
     action '$$' (noprec):   error
-  immediate action: <none>  gotos:    goto ty: 110
-state 114:  items:    ty -> ty 'STAR' . ty_tuple
+  immediate action: <none>  gotos:    goto ty: 117
+    goto ty_tuple_atom: 109
+state 120:  items:    ty_tuple_atom -> 'BRA' . ty 'KET'
   actions:    action 'EOF' (noprec):   error
     action 'IF' (noprec):   error
     action 'THEN' (noprec):   error
@@ -5100,7 +5342,7 @@ state 114:  items:    ty -> ty 'STAR' . ty_tuple
     action 'IN' (noprec):   error
     action 'TRUE' (noprec):   error
     action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
+    action 'BRA' (noprec):   shift 120
     action 'KET' (noprec):   error
     action 'PLUS' (noprec):   error
     action 'MINUS' (noprec):   error
@@ -5120,216 +5362,55 @@ state 114:  items:    ty -> ty 'STAR' . ty_tuple
     action 'SEMICOLON2' (noprec):   error
     action 'COMMA' (noprec):   error
     action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
+    action 'ID' (noprec):   shift 115
     action 'CHAR' (noprec):   error
     action 'FLOAT' (noprec):   error
     action 'INT' (noprec):   error
     action 'error' (noprec):   error
     action '#' (noprec):   error
     action '$$' (noprec):   error
-  immediate action: <none>  gotos:    goto ty: 112
-    goto ty_tuple: 116
-state 115:  items:    ty -> ty 'STAR' . ty_tuple
-    ty_tuple -> ty 'STAR' . ty_tuple
-  actions:    action 'EOF' (noprec):   error
-    action 'IF' (noprec):   error
-    action 'THEN' (noprec):   error
-    action 'ELSE' (noprec):   error
-    action 'FUN' (noprec):   error
-    action 'ARROW' (noprec):   error
-    action 'LET' (noprec):   error
-    action 'REC' (noprec):   error
-    action 'IN' (noprec):   error
-    action 'TRUE' (noprec):   error
-    action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
-    action 'KET' (noprec):   error
-    action 'PLUS' (noprec):   error
-    action 'MINUS' (noprec):   error
-    action 'STAR' (noprec):   error
-    action 'SLASH' (noprec):   error
-    action 'PERCENT' (noprec):   error
-    action 'LT' (noprec):   error
-    action 'GT' (noprec):   error
-    action 'LEQ' (noprec):   error
-    action 'GEQ' (noprec):   error
-    action 'EQ' (noprec):   error
-    action 'NEQ' (noprec):   error
-    action 'AND' (noprec):   error
-    action 'OR' (noprec):   error
-    action 'NOT' (noprec):   error
-    action 'COLON' (noprec):   error
-    action 'SEMICOLON2' (noprec):   error
-    action 'COMMA' (noprec):   error
-    action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
-    action 'CHAR' (noprec):   error
-    action 'FLOAT' (noprec):   error
-    action 'INT' (noprec):   error
-    action 'error' (noprec):   error
-    action '#' (noprec):   error
-    action '$$' (noprec):   error
-  immediate action: <none>  gotos:    goto ty: 112
-    goto ty_tuple: 117
-state 116:  items:    ty -> ty 'STAR' ty_tuple . 
-  actions:    action 'EOF' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'IF' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'THEN' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'ELSE' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'FUN' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'ARROW' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'LET' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'REC' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'IN' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'TRUE' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'FALSE' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'BRA' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'KET' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'PLUS' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'MINUS' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'STAR' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'SLASH' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'PERCENT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'LT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'GT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'LEQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'GEQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'EQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'NEQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'AND' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'OR' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'NOT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'COLON' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'SEMICOLON2' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'COMMA' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'STRING' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'ID' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'CHAR' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'FLOAT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'INT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'error' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action '#' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action '$$' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-  immediate action:   reduce ty --> ty 'STAR' ty_tuple  gotos:state 117:  items:    ty -> ty 'STAR' ty_tuple . 
-    ty_tuple -> ty 'STAR' ty_tuple . 
-  actions:    action 'EOF' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'IF' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'THEN' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'ELSE' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'FUN' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'ARROW' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'LET' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'REC' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'IN' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'TRUE' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'FALSE' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'BRA' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'KET' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'PLUS' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'MINUS' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'STAR' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'SLASH' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'PERCENT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'LT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'GT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'LEQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'GEQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'EQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'NEQ' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'AND' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'OR' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'NOT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'COLON' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'SEMICOLON2' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'COMMA' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'STRING' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'ID' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'CHAR' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'FLOAT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'INT' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action 'error' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action '#' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-    action '$$' (explicit left 9996):   reduce ty --> ty 'STAR' ty_tuple
-  immediate action: <none>  gotos:state 118:  items:    ty -> 'BRA' . ty 'KET'
-  actions:    action 'EOF' (noprec):   error
-    action 'IF' (noprec):   error
-    action 'THEN' (noprec):   error
-    action 'ELSE' (noprec):   error
-    action 'FUN' (noprec):   error
-    action 'ARROW' (noprec):   error
-    action 'LET' (noprec):   error
-    action 'REC' (noprec):   error
-    action 'IN' (noprec):   error
-    action 'TRUE' (noprec):   error
-    action 'FALSE' (noprec):   error
-    action 'BRA' (noprec):   shift 118
-    action 'KET' (noprec):   error
-    action 'PLUS' (noprec):   error
-    action 'MINUS' (noprec):   error
-    action 'STAR' (noprec):   error
-    action 'SLASH' (noprec):   error
-    action 'PERCENT' (noprec):   error
-    action 'LT' (noprec):   error
-    action 'GT' (noprec):   error
-    action 'LEQ' (noprec):   error
-    action 'GEQ' (noprec):   error
-    action 'EQ' (noprec):   error
-    action 'NEQ' (noprec):   error
-    action 'AND' (noprec):   error
-    action 'OR' (noprec):   error
-    action 'NOT' (noprec):   error
-    action 'COLON' (noprec):   error
-    action 'SEMICOLON2' (noprec):   error
-    action 'COMMA' (noprec):   error
-    action 'STRING' (noprec):   error
-    action 'ID' (noprec):   shift 109
-    action 'CHAR' (noprec):   error
-    action 'FLOAT' (noprec):   error
-    action 'INT' (noprec):   error
-    action 'error' (noprec):   error
-    action '#' (noprec):   error
-    action '$$' (noprec):   error
-  immediate action: <none>  gotos:    goto ty: 111
-state 119:  items:    ty -> 'BRA' ty 'KET' . 
-  actions:    action 'EOF' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'IF' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'THEN' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'ELSE' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'FUN' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'ARROW' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'LET' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'REC' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'IN' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'TRUE' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'FALSE' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'BRA' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'KET' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'PLUS' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'MINUS' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'STAR' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'SLASH' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'PERCENT' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'LT' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'GT' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'LEQ' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'GEQ' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'EQ' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'NEQ' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'AND' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'OR' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'NOT' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'COLON' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'SEMICOLON2' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'COMMA' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'STRING' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'ID' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'CHAR' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'FLOAT' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'INT' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action 'error' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action '#' (noprec):   reduce ty --> 'BRA' ty 'KET'
-    action '$$' (noprec):   reduce ty --> 'BRA' ty 'KET'
-  immediate action:   reduce ty --> 'BRA' ty 'KET'  gotos:
+  immediate action: <none>  gotos:    goto ty: 118
+    goto ty_tuple_atom: 109
+state 121:  items:    ty_tuple_atom -> 'BRA' ty 'KET' . 
+  actions:    action 'EOF' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'IF' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'THEN' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'ELSE' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'FUN' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'ARROW' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'LET' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'REC' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'IN' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'TRUE' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'FALSE' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'BRA' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'KET' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'PLUS' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'MINUS' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'STAR' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'SLASH' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'PERCENT' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'LT' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'GT' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'LEQ' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'GEQ' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'EQ' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'NEQ' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'AND' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'OR' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'NOT' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'COLON' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'SEMICOLON2' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'COMMA' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'STRING' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'ID' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'CHAR' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'FLOAT' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'INT' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action 'error' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action '#' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+    action '$$' (noprec):   reduce ty_tuple_atom --> 'BRA' ty 'KET'
+  immediate action:   reduce ty_tuple_atom --> 'BRA' ty 'KET'  gotos:
 startStates = 0;2
 ------------------------
         Output file describing compiled parser placed in Parser.fs and Parser.fsi
