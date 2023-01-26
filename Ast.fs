@@ -145,7 +145,12 @@ let rec pretty_ty_raw t =
         | TyArrow _ -> sprintf "(%s) -> %s" (pretty_ty_raw t1) (pretty_ty_raw t2)
         | _ -> sprintf "%s -> %s" (pretty_ty_raw t1) (pretty_ty_raw t2)
     | TyVar n -> pretty_tyvar n
-    | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty_raw ts)
+    | TyTuple ts ->
+        let pretty_tuple_elem t =
+            match t with
+            | TyArrow _ | TyTuple _ -> sprintf "(%s)" (pretty_ty_raw t)
+            | _ -> pretty_ty_raw t
+        sprintf "%s" (flatten pretty_tuple_elem " *" ts)
 
 let pretty_ty t = pretty_ty_raw (normalize_ty t)
 
@@ -247,7 +252,7 @@ let rec pretty_value v =
     match v with
     | VLit lit -> pretty_lit lit
 
-    | VTuple vs -> pretty_tupled pretty_value vs
+    | VTuple vs -> sprintf "(%s)" (pretty_tupled pretty_value vs)
 
     | Closure (env, x, e) -> sprintf "<|%s;%s;%s|>" (pretty_env pretty_value env) x (pretty_expr e)
     
