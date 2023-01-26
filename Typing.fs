@@ -24,7 +24,7 @@ let rec freevars_ty (t : ty) : tyvar Set =
     | TyName _ -> Set.empty
     | TyArrow (t1, t2) -> (freevars_ty t1) + (freevars_ty t2)
     | TyVar tv -> Set.singleton tv
-    | TyTuple ts -> List.fold (fun r t -> r + freevars_ty t) Set.empty ts
+    | TyTuple ts -> ts |> List.map freevars_ty |> List.fold (+) Set.empty
 
 let freevars_scheme (Forall (tvs, t) : scheme) : tyvar Set = freevars_ty t - tvs
 
@@ -137,8 +137,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let env = apply_subst_env sp env
         let t1 = apply_subst_ty sp t1
         let tvs = freevars_ty t1 - freevars_scheme_env env
-        let sch = Forall (tvs, t1)
-        let t2, s2 = typeinfer_expr (bind_pat x sch env) e2
+        let t2, s2 = typeinfer_expr (bind_pat x (Forall (tvs, t1)) env) e2
         t2, compose_all_substs [ s2; sp; s1 ]
 
     | IfThenElse (e1, e2, e3o) ->
