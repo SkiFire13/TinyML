@@ -97,22 +97,23 @@ type value =
 
 type interactive = IExpr of expr | IBinding of binding
 
+let rec normalize_ty_with s t =
+    match t with
+    | TyName _ -> s, t
+    | TyArrow (t1, t2) ->
+        let s1, t1 = normalize_ty_with s t1
+        let s2, t2 = normalize_ty_with s1 t2
+        s2, TyArrow (t1, t2)
+    | TyVar tv ->
+        match List.tryFindIndex (fun tvk -> tvk = tv) s with
+        | Some idx -> s, TyVar idx
+        | None -> s @ [tv], TyVar (List.length s)
+    | TyTuple ts ->
+        let s, ts = List.fold (fun (s, ts) t -> let s, t = normalize_ty_with s t in (s, ts @ [t])) (s, []) ts
+        s, TyTuple ts
+
 let normalize_ty t =
-    let rec normalize_ty_inner s t =
-        match t with
-        | TyName _ -> s, t
-        | TyArrow (t1, t2) ->
-            let s1, t1 = normalize_ty_inner s t1
-            let s2, t2 = normalize_ty_inner s1 t2
-            s2, TyArrow (t1, t2)
-        | TyVar tv ->
-            match List.tryFindIndex (fun tvk -> tvk = tv) s with
-            | Some idx -> s, TyVar idx
-            | None -> s @ [tv], TyVar (List.length s)
-        | TyTuple ts ->
-            let s, ts = List.fold (fun (s, ts) t -> let s, t = normalize_ty_inner s t in (s, ts @ [t])) (s, []) ts
-            s, TyTuple ts
-    let _, t = normalize_ty_inner [] t
+    let _, t = normalize_ty_with [] t
     t
 
 // pretty printers
@@ -135,17 +136,17 @@ let rec pretty_tyvar tyvar =
     let c = string (char (int 'a' + tyvar))
     (if tyvar < 26 then "'" else (pretty_tyvar (tyvar / 26))) + c
 
-let pretty_ty t =
-    let rec pretty_ty_inner t =
-        match t with
-        | TyName s -> s
-        | TyArrow (t1, t2) ->
-            match t1 with
-            | TyArrow _ -> sprintf "(%s) -> %s" (pretty_ty_inner t1) (pretty_ty_inner t2)
-            | _ -> sprintf "%s -> %s" (pretty_ty_inner t1) (pretty_ty_inner t2)
-        | TyVar n -> pretty_tyvar n
-        | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty_inner ts)
-    pretty_ty_inner (normalize_ty t)
+let rec pretty_ty_raw t =
+    match t with
+    | TyName s -> s
+    | TyArrow (t1, t2) ->
+        match t1 with
+        | TyArrow _ -> sprintf "(%s) -> %s" (pretty_ty_raw t1) (pretty_ty_raw t2)
+        | _ -> sprintf "%s -> %s" (pretty_ty_raw t1) (pretty_ty_raw t2)
+    | TyVar n -> pretty_tyvar n
+    | TyTuple ts -> sprintf "(%s)" (pretty_tupled pretty_ty_raw ts)
+
+let pretty_ty t = pretty_ty_raw (normalize_ty t)
 
 let pretty_lit lit =
     match lit with
