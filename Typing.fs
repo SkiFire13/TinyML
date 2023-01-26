@@ -123,6 +123,17 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let s = compose_all_substs [ s4; s3; s2; s1]
         apply_subst_ty s t4, s
 
+    | BinOp (e1, "|>", e2) ->
+        let (t1, s1) = typeinfer_expr env e1
+        let (t2, s2) = typeinfer_expr (apply_subst_env s1 env) e2
+        let t3, t4 = fresh_ty_var(), fresh_ty_var()
+        let err _ = type_error "expecting a function on right side of pipe, but got %s"
+        let s3 = unify err (TyArrow (t3, t4)) (apply_subst_ty s2 t2)
+        let err = type_error "wrong application: argument type %s does not match function domain %s"
+        let s4 = unify err (apply_subst_ty s3 t1) (apply_subst_ty s3 t3)
+        let s = compose_all_substs [ s4; s3; s2; s1]
+        apply_subst_ty s t4, s
+
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
         let env = apply_subst_env s1 env

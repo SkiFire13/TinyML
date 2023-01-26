@@ -58,6 +58,7 @@ and tokenize = parse
 	| '>'			{ GT }
 	| "<="			{ LEQ }
 	| ">="			{ GEQ }
+	| "|>"		 	{ PIPE }
 	| "or"			{ OR }
 	| "and"			{ AND }
 	| "not"			{ NOT }

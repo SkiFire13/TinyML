@@ -228,9 +228,10 @@ let rec pretty_expr e =
         let prec op = 
             match op with
             | "or" | "and" -> 0
-            | "<" | "<=" | ">" | ">=" | "=" | "<>" -> 1
-            | "+" | "-" -> 2
-            | "*" | "/" | "%" -> 3
+            | "|>" -> 1
+            | "<" | "<=" | ">" | ">=" | "=" | "<>" -> 2
+            | "+" | "-" -> 3
+            | "*" | "/" | "%" -> 4
             | _ -> unexpected_error "pretty_expr: invalid BinOp symbol"
         let is_commut op =
             match op with

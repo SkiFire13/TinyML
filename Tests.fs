@@ -78,6 +78,15 @@ let ``Test app`` () =
     assert_inference_error "let f (x : int) = 1 in f 1.0"
 
 [<Fact>]
+let ``Test pipe`` () =
+    assert_inferred_type_eq "let f x = x in 2 |> f" TyInt
+    assert_inferred_type_eq "let f x y = x + y in 2 |> f" (TyArrow (TyInt, TyInt))
+
+    assert_inference_error "fun f -> f |> f"
+    assert_inference_error "1 |> 2"
+    assert_inference_error "let f (x : int) = 1 in 1.0 |> f"
+
+[<Fact>]
 let ``Test if-then-else`` () =
     assert_inferred_type_eq
         "fun x y z -> if x then y else z"

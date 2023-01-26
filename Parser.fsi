@@ -25,6 +25,7 @@ type token =
   | GEQ
   | EQ
   | NEQ
+  | PIPE
   | AND
   | OR
   | NOT
@@ -61,6 +62,7 @@ type tokenId =
     | TOKEN_GEQ
     | TOKEN_EQ
     | TOKEN_NEQ
+    | TOKEN_PIPE
     | TOKEN_AND
     | TOKEN_OR
     | TOKEN_NOT

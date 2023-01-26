@@ -30,6 +30,14 @@ let rec eval_expr (env : value env) (e : expr) : value =
         | Closure (env1, x, e) -> eval_expr ((x, v2) :: env1) e
         | RecClosure (env1, f, x, e) -> eval_expr ((x, v2) :: (f, v1) :: env1) e
         | _ -> unexpected_error "eval_expr: non-closure in left side of application: %s" (pretty_value v1)
+
+    | BinOp (e1, "|>", e2) ->
+        let v1 = eval_expr env e1
+        let v2 = eval_expr env e2
+        match v2 with
+        | Closure (env1, x, e) -> eval_expr ((x, v1) :: env1) e
+        | RecClosure (env1, f, x, e) -> eval_expr ((x, v1) :: (f, v2) :: env1) e
+        | _ -> unexpected_error "eval_expr: non-closure in right side of pipe operator: %s" (pretty_value v2)
         
     | IfThenElse (e1, e2, None) ->
         let v1 = eval_expr env e1
