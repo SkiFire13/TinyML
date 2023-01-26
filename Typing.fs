@@ -8,6 +8,7 @@ module TinyML.Typing
 open Ast
 
 let type_error fmt = throw_formatted TypeError fmt
+let lexical_error fmt = throw_formatted LexicalError fmt
 
 // Type inference
 
@@ -91,7 +92,10 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | Lit LUnit -> TyUnit, []
 
     | Var x ->
-        let _, sch = List.find (fun (n, _) -> n = x) env
+        let sch =
+            match List.tryFind (fun (n, _) -> n = x) env with
+            | Some (_, sch) -> sch
+            | None -> lexical_error "variable %s is not defined" x
         refresh_scheme sch, []
 
     | Lambda (x, txo, tro, e) ->
