@@ -52,6 +52,8 @@ let apply_subst_env (s : subst) (env : scheme env) : scheme env =
 let compose_subst (snew : subst) (sold : subst) : subst =
     snew @ List.map (fun (tv, t) -> (tv, apply_subst_ty snew t)) sold
 
+let compose_all_substs (ss : subst list) : subst = List.reduce compose_subst ss
+
 let unify (fe : string -> string -> unit) (t1 : ty) (t2 : ty) : subst =
     let rec unify_inner t1 t2 : subst * bool =
         match (t1, t2) with
@@ -120,7 +122,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let s3 = unify fe (TyArrow (t3, t4)) (apply_subst_ty s2 t1)
         let fe = type_error "wrong application: argument type %s does not match function domain %s"
         let s4 = unify fe (apply_subst_ty s3 t2) (apply_subst_ty s3 t3)
-        let s = compose_subst (compose_subst s4 s3) (compose_subst s2 s1)
+        let s = compose_all_substs [ s4; s3; s2; s1]
         apply_subst_ty s t4, s
 
     | Let (x, tyo, e1, e2) ->
@@ -133,13 +135,13 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
             match p with
             | PVariable _ -> fresh_ty_var()
             | PTuple ps -> TyTuple (List.map ty_of_pat ps)
-        let s = compose_subst (unify fe (ty_of_pat x) (apply_subst_ty so t1)) so
-        let env = apply_subst_env s env
-        let t1 = apply_subst_ty s t1
+        let sp = compose_subst (unify fe (ty_of_pat x) (apply_subst_ty so t1)) so
+        let env = apply_subst_env sp env
+        let t1 = apply_subst_ty sp t1
         let tvs = freevars_ty t1 - freevars_scheme_env env
         let sch = Forall (tvs, t1)
         let t2, s2 = typeinfer_expr (bind_pat x sch env) e2
-        t2, compose_subst (compose_subst s2 s) s1
+        t2, compose_all_substs [ s2; sp; s1 ]
 
     | IfThenElse (e1, e2, e3o) ->
         let t1, s1 = typeinfer_expr env e1
@@ -154,7 +156,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
             | Some _ -> type_error "type mismatch in if-then-else: then branch has type %s and is different from else branch type %s" tt te
             | None -> type_error "if-then without else requires unit type on then branch, but got %s" tt
         let su = unify fe (apply_subst_ty s3 t2) t3
-        apply_subst_ty su t3, compose_subst (compose_subst su s3) (compose_subst s2 sb)
+        apply_subst_ty su t3, compose_all_substs [ su; s3; s2; sb ]
 
     | Tuple es ->
         let acc_ty_subst (ts, s) e =
@@ -185,7 +187,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
             let fe _ = type_error "binary operator %s expects numeric operands, but got %s" op
             match t with
             | TyInt | TyFloat -> t, (compose_subst s so)
-            | _ -> TyInt, compose_subst (unify fe TyInt t) (compose_subst s so)
+            | _ -> TyInt, compose_all_substs [ (unify fe TyInt t); s; so ]
         let t1, s1 = check_or_infer_num [] e1
         let t2, s2 = check_or_infer_num s1 e2
         match t1, t2 with
@@ -197,16 +199,14 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let fe _ = type_error "binary operator %s expects int operands, but got %s" op
         let s1b = compose_subst (unify fe TyInt t1) s1
         let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
-        let s2b = compose_subst (unify fe TyInt t2) s2
-        TyBool, compose_subst s2b s1b
+        TyBool, compose_all_substs [ (unify fe TyInt t2); s2; s1b ]
 
     | BinOp (e1, ("and" | "or" as op), e2) ->
         let t1, s1 = typeinfer_expr env e1
         let fe _ = type_error "binary operator %s expects bool operands, but got %s" op
         let s1b = compose_subst (unify fe TyBool t1) s1
         let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
-        let s2b = compose_subst (unify fe TyBool t2) s2
-        TyBool, compose_subst s2b s1b
+        TyBool, compose_all_substs [ (unify fe TyBool t2); s2; s1b ]
 
     | UnOp ("not", e) ->
         let t, s = typeinfer_expr env e
