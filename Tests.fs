@@ -115,3 +115,8 @@ let ``Test tuple`` () =
     assert_inference_error "let x : int * int = (1, 2, 3) in x"
     assert_inference_error
         "let f x y z = (if true then x else y, if true then x else z, z + 1, not x) in f"
+
+[<Fact>]
+let ``Test weird`` () =
+    assert_inference_error
+        "let f x y = x in let g x = if true then x else f x in g"
