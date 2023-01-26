@@ -106,10 +106,16 @@ let ``Test tuple`` () =
     assert_inferred_type_eq
         "let f x y z = (if true then x else y, if true then x else z, z + 1) in f"
         (TyArrow (TyInt, TyArrow (TyInt, TyArrow (TyInt, TyTuple [ TyInt; TyInt; TyInt ]))))
+    assert_inferred_type_eq
+        "fun a -> let ((x, y), (w, z)) = a in ()"
+        (TyArrow (TyTuple [ TyTuple [ TyVar 0; TyVar 1 ]; TyTuple [ TyVar 2; TyVar 3 ] ], TyUnit))
 
     assert_inference_error "let x : int * int = (1, 2, 3) in x"
     assert_inference_error
         "let f x y z = (if true then x else y, if true then x else z, z + 1, not x) in f"
+    assert_inference_error "let (x, y) = 1 in ()"
+    assert_inference_error "let (x, y) : int = 1 in ()"
+    assert_inference_error "let (x, y) : int * int = 1 in ()"
 
 [<Fact>]
 let ``Test weird`` () =

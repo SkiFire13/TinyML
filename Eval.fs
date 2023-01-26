@@ -7,6 +7,12 @@ module TinyML.Eval
 
 open Ast
 
+let rec bind_pat p v env =
+    match p, v with
+    | PVariable x, v -> (x, v) :: env
+    | PTuple ps, VTuple vs -> List.foldBack2 bind_pat ps vs env
+    | _ -> unexpected_error "eval_expr: tried to pattern match a tuple %s to a non-tuple value %s" (pretty_pattern p) (pretty_value v)
+
 let rec eval_expr (env : value env) (e : expr) : value =
     match e with
     | Lit lit -> VLit lit
@@ -45,9 +51,10 @@ let rec eval_expr (env : value env) (e : expr) : value =
 
     | Let (x, _, e1, e2) -> 
         let v1 = eval_expr env e1
-        eval_expr ((x, v1) :: env) e2
+        eval_expr (bind_pat x v1 env) e2
 
     | LetRec (f, _, e1, e2) -> 
+        let f = match f with PVariable f -> f | _ -> unexpected_error "eval_expr: expected let-rec to have a binding pattern but got: %s" (pretty_pattern f)
         let v1 = eval_expr env e1
         let v1 =
             match v1 with

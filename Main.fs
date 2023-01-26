@@ -52,16 +52,20 @@ let main_interactive () =
             let x, (Forall (_, t), v) =
                 match parse_from_TextReader stdin "LINE" Parser.interactive with 
                 | IExpr e ->
-                    "it", interpret_expr tenv venv e
+                    PVariable "it", interpret_expr tenv venv e
 
                 | IBinding (_, x, _, _ as b) ->
-                    let s, v = interpret_expr tenv venv (LetIn (b, Var x)) // TRICK: put the variable itself as body after the in
+                    let rec pattern_to_expr p =
+                        match p with
+                        | PVariable x -> Var x
+                        | PTuple ps -> Tuple (List.map pattern_to_expr ps)
+                    let s, v = interpret_expr tenv venv (LetIn (b, pattern_to_expr x)) // TRICK: put the variable itself as body after the in
                     // update global environments
-                    tenv <- (x, s) :: tenv
-                    venv <- (x, v) :: venv
+                    tenv <- Typing.bind_pat x s tenv
+                    venv <- Eval.bind_pat x v venv
                     x, (s, v)
 
-            printfn "val %s : %s = %s" x (pretty_ty t) (pretty_value v)
+            printfn "val %s : %s = %s" (pretty_pattern x) (pretty_ty t) (pretty_value v)
                 
     
 [<EntryPoint>]

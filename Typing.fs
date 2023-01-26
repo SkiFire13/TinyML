@@ -12,6 +12,13 @@ let lexical_error fmt = throw_formatted LexicalError fmt
 
 // Type inference
 
+let rec bind_pat p (Forall (tvs, t) as s) env =
+    match p, t with
+    | PVariable x, _ -> (x, s) :: env
+    | PTuple ps, TyTuple ts when List.length ps = List.length ts ->
+        List.foldBack2 bind_pat ps (List.map (fun t -> Forall (tvs, t)) ts) env
+    | _ -> unexpected_error "the type of a tuple pattern was not a tuple with the same size"
+
 let rec freevars_ty (t : ty) : tyvar Set =
     match t with
     | TyName _ -> Set.empty
@@ -119,14 +126,20 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
         let env = apply_subst_env s1 env
-        let fe t1 tr = type_error "type annotation in let binding of %s is wrong: exptected %s, but got %s" x tr t1
+        let fe t1 tr = type_error "type annotation in let binding of %s is wrong: exptected %s, but got %s" (pretty_pattern x) tr t1
         let so = Option.defaultValue [] (Option.map (unify fe t1) tyo)
-        let env = apply_subst_env so env
-        let t1 = apply_subst_ty so t1
+        let fe = type_error "binding %s was expecting a tuple type %s but got type %s" (pretty_pattern x)
+        let rec ty_of_pat p =
+            match p with
+            | PVariable _ -> fresh_ty_var()
+            | PTuple ps -> TyTuple (List.map ty_of_pat ps)
+        let s = compose_subst (unify fe (ty_of_pat x) (apply_subst_ty so t1)) so
+        let env = apply_subst_env s env
+        let t1 = apply_subst_ty s t1
         let tvs = freevars_ty t1 - freevars_scheme_env env
         let sch = Forall (tvs, t1)
-        let t2, s2 = typeinfer_expr ((x, sch) :: env) e2
-        t2, compose_subst (compose_subst s2 so) s1
+        let t2, s2 = typeinfer_expr (bind_pat x sch env) e2
+        t2, compose_subst (compose_subst s2 s) s1
 
     | IfThenElse (e1, e2, e3o) ->
         let t1, s1 = typeinfer_expr env e1
@@ -151,6 +164,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         apply_subst_ty s (TyTuple tys), s
 
     | LetRec (f, tfo, e1, e2) ->
+        let f = match f with PVariable f -> f | _ -> unexpected_error "non-variable binding in let-rec"
         let tf = Option.defaultWith fresh_ty_var tfo
         let t1, s1 = typeinfer_expr ((f, Forall (Set.empty, tf)) :: env) e1
         let fe _ = type_error "let rec is restricted to functions, but got type %s"
@@ -241,6 +255,7 @@ let rec typecheck_expr (env : ty env) (e : expr) : ty =
         | _ -> type_error "expecting a function on left side of application, but got %s" (pretty_ty t1)
 
     | Let (x, tyo, e1, e2) ->
+        let x = match x with PVariable x -> x | _ -> unexpected_error "non-variable binding not supported"
         let t1 = typecheck_expr env e1
         match tyo with
         | None -> ()
@@ -267,6 +282,7 @@ let rec typecheck_expr (env : ty env) (e : expr) : ty =
         unexpected_error "typecheck_expr: unannotated let rec is not supported"
         
     | LetRec (f, Some tf, e1, e2) ->
+        let f = match f with PVariable f -> f | _ -> unexpected_error "non-variable binding in let-rec"
         let env0 = (f, tf) :: env
         let t1 = typecheck_expr env0 e1
         match t1 with
