@@ -54,7 +54,7 @@ let compose_subst (snew : subst) (sold : subst) : subst =
 
 let compose_all_substs (ss : subst list) : subst = List.reduce compose_subst ss
 
-let unify (fe : string -> string -> unit) (t1 : ty) (t2 : ty) : subst =
+let unify (err : string -> string -> unit) (t1 : ty) (t2 : ty) : subst =
     let rec unify_inner t1 t2 : subst * bool =
         match (t1, t2) with
         | (TyName n1, TyName n2) when n1 = n2 -> [], false
@@ -74,7 +74,7 @@ let unify (fe : string -> string -> unit) (t1 : ty) (t2 : ty) : subst =
     if e then 
         let tyvarmap, t1 = normalize_ty_with [] (apply_subst_ty s t1)
         let _, t2 = normalize_ty_with tyvarmap (apply_subst_ty s t2)
-        fe (pretty_ty_raw t1) (pretty_ty_raw t2)
+        err (pretty_ty_raw t1) (pretty_ty_raw t2)
     s
 
 module TyVarGenerator =
@@ -108,32 +108,32 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | Lambda (x, txo, tro, e) ->
         let tx = Option.defaultWith fresh_ty_var txo
         let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
-        let fe = type_error "type annotation in let binding is wrong: expected %s, but got %s"
-        let s = Option.defaultValue s (Option.map (fun tr -> compose_subst (unify fe tr t) s) tro)
+        let err = type_error "type annotation in let binding is wrong: expected %s, but got %s"
+        let s = Option.defaultValue s (Option.map (fun tr -> compose_subst (unify err tr t) s) tro)
         TyArrow (apply_subst_ty s tx, apply_subst_ty s t), s
 
     | App (e1, e2) ->
         let (t1, s1) = typeinfer_expr env e1
         let (t2, s2) = typeinfer_expr (apply_subst_env s1 env) e2
         let t3, t4 = fresh_ty_var(), fresh_ty_var()
-        let fe _ = type_error "expecting a function on left side of application, but got %s"
-        let s3 = unify fe (TyArrow (t3, t4)) (apply_subst_ty s2 t1)
-        let fe = type_error "wrong application: argument type %s does not match function domain %s"
-        let s4 = unify fe (apply_subst_ty s3 t2) (apply_subst_ty s3 t3)
+        let err _ = type_error "expecting a function on left side of application, but got %s"
+        let s3 = unify err (TyArrow (t3, t4)) (apply_subst_ty s2 t1)
+        let err = type_error "wrong application: argument type %s does not match function domain %s"
+        let s4 = unify err (apply_subst_ty s3 t2) (apply_subst_ty s3 t3)
         let s = compose_all_substs [ s4; s3; s2; s1]
         apply_subst_ty s t4, s
 
     | Let (x, tyo, e1, e2) ->
         let t1, s1 = typeinfer_expr env e1
         let env = apply_subst_env s1 env
-        let fe t1 tr = type_error "type annotation in let binding of %s is wrong: exptected %s, but got %s" (pretty_pattern x) tr t1
-        let so = Option.defaultValue [] (Option.map (unify fe t1) tyo)
-        let fe = type_error "binding %s was expecting a tuple type %s but got type %s" (pretty_pattern x)
+        let err t1 tr = type_error "type annotation in let binding of %s is wrong: exptected %s, but got %s" (pretty_pattern x) tr t1
+        let so = Option.defaultValue [] (Option.map (unify err t1) tyo)
+        let err = type_error "binding %s was expecting a tuple type %s but got type %s" (pretty_pattern x)
         let rec ty_of_pat p =
             match p with
             | PVariable _ -> fresh_ty_var()
             | PTuple ps -> TyTuple (List.map ty_of_pat ps)
-        let sp = compose_subst (unify fe (ty_of_pat x) (apply_subst_ty so t1)) so
+        let sp = compose_subst (unify err (ty_of_pat x) (apply_subst_ty so t1)) so
         let env = apply_subst_env sp env
         let t1 = apply_subst_ty sp t1
         let tvs = freevars_ty t1 - freevars_scheme_env env
@@ -143,17 +143,17 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
 
     | IfThenElse (e1, e2, e3o) ->
         let t1, s1 = typeinfer_expr env e1
-        let fe _ = type_error "if condition must be a bool, but got a %s"
-        let sb = compose_subst (unify fe TyBool t1) s1
+        let err _ = type_error "if condition must be a bool, but got a %s"
+        let sb = compose_subst (unify err TyBool t1) s1
         let env = apply_subst_env sb env
         let t2, s2 = typeinfer_expr env e2
         let env = apply_subst_env s2 env
         let t3, s3 = Option.defaultValue (TyUnit, []) (Option.map (typeinfer_expr env) e3o)
-        let fe tt te =
+        let err tt te =
             match e3o with
             | Some _ -> type_error "type mismatch in if-then-else: then branch has type %s and is different from else branch type %s" tt te
             | None -> type_error "if-then without else requires unit type on then branch, but got %s" tt
-        let su = unify fe (apply_subst_ty s3 t2) t3
+        let su = unify err (apply_subst_ty s3 t2) t3
         apply_subst_ty su t3, compose_all_substs [ su; s3; s2; sb ]
 
     | Tuple es ->
@@ -167,11 +167,11 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let f = match f with PVariable f -> f | _ -> unexpected_error "non-variable binding in let-rec"
         let tf = Option.defaultWith fresh_ty_var tfo
         let t1, s1 = typeinfer_expr ((f, Forall (Set.empty, tf)) :: env) e1
-        let fe _ = type_error "let rec is restricted to functions, but got type %s"
+        let err _ = type_error "let rec is restricted to functions, but got type %s"
         let ty_arrow = TyArrow (fresh_ty_var(), fresh_ty_var())
-        let sf = compose_subst (unify fe ty_arrow (apply_subst_ty s1 t1)) s1
-        let fe = type_error "let rec type mismatch: expected %s, but got %s"
-        let sf = compose_subst (unify fe (apply_subst_ty sf tf) t1) sf
+        let sf = compose_subst (unify err ty_arrow (apply_subst_ty s1 t1)) s1
+        let err = type_error "let rec type mismatch: expected %s, but got %s"
+        let sf = compose_subst (unify err (apply_subst_ty sf tf) t1) sf
         let env = apply_subst_env sf env
         let t1 = apply_subst_ty sf t1
         let tvs = freevars_ty t1 - freevars_scheme_env env
@@ -182,10 +182,10 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
     | BinOp (e1, ("+" | "-" | "/" | "%" | "*" as op), e2) ->
         let check_or_infer_num so e =
             let t, s = typeinfer_expr (apply_subst_env so env) e
-            let fe _ = type_error "binary operator %s expects numeric operands, but got %s" op
+            let err _ = type_error "binary operator %s expects numeric operands, but got %s" op
             match t with
             | TyInt | TyFloat -> t, (compose_subst s so)
-            | _ -> TyInt, compose_all_substs [ (unify fe TyInt t); s; so ]
+            | _ -> TyInt, compose_all_substs [ (unify err TyInt t); s; so ]
         let t1, s1 = check_or_infer_num [] e1
         let t2, s2 = check_or_infer_num s1 e2
         match t1, t2 with
@@ -194,29 +194,29 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
 
     | BinOp (e1, ("<" | "<=" | ">" | ">=" | "=" | "<>" as op), e2) ->
         let t1, s1 = typeinfer_expr env e1
-        let fe _ = type_error "binary operator %s expects int operands, but got %s" op
-        let s1b = compose_subst (unify fe TyInt t1) s1
+        let err _ = type_error "binary operator %s expects int operands, but got %s" op
+        let s1b = compose_subst (unify err TyInt t1) s1
         let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
-        TyBool, compose_all_substs [ (unify fe TyInt t2); s2; s1b ]
+        TyBool, compose_all_substs [ (unify err TyInt t2); s2; s1b ]
 
     | BinOp (e1, ("and" | "or" as op), e2) ->
         let t1, s1 = typeinfer_expr env e1
-        let fe _ = type_error "binary operator %s expects bool operands, but got %s" op
-        let s1b = compose_subst (unify fe TyBool t1) s1
+        let err _ = type_error "binary operator %s expects bool operands, but got %s" op
+        let s1b = compose_subst (unify err TyBool t1) s1
         let t2, s2 = typeinfer_expr (apply_subst_env s1b env) e2
-        TyBool, compose_all_substs [ (unify fe TyBool t2); s2; s1b ]
+        TyBool, compose_all_substs [ (unify err TyBool t2); s2; s1b ]
 
     | UnOp ("not", e) ->
         let t, s = typeinfer_expr env e
-        let fe _ = type_error "unary not operator expects a bool operand, but got %s"
-        TyBool, compose_subst (unify fe TyBool t) s
+        let err _ = type_error "unary not operator expects a bool operand, but got %s"
+        TyBool, compose_subst (unify err TyBool t) s
 
     | UnOp ("-", e) ->
         let t, s = typeinfer_expr env e
-        let fe _ = type_error "unary negation operator expects a numeric operand, but got %s"
+        let err _ = type_error "unary negation operator expects a numeric operand, but got %s"
         match t with
         | TyInt | TyFloat -> t, s
-        | _ -> TyInt, compose_subst (unify fe TyInt t) s
+        | _ -> TyInt, compose_subst (unify err TyInt t) s
 
     | _ -> failwithf "not implemented"
 
