@@ -136,8 +136,8 @@ let pretty_env p env = sprintf "[%s]" (flatten (fun (x, o) -> sprintf "%s=%s" x 
 let pretty_tupled p l = flatten p "," l
 
 let rec pretty_tyvar tyvar =
-    let c = string (char (int 'a' + tyvar))
-    (if tyvar < 26 then "'" else (pretty_tyvar (tyvar / 26))) + c
+    let c = string (char (int 'a' + tyvar % 26))
+    (if tyvar < 26 then "'" else (pretty_tyvar (tyvar / 26 - 1))) + c
 
 let rec pretty_ty_raw t =
     match t with
