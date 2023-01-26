@@ -60,16 +60,14 @@ let unify (fe : string -> string -> unit) (t1 : ty) (t2 : ty) : subst =
         | (TyName n1, TyName n2) when n1 = n2 -> [], false
         | (TyArrow (t1, t2), TyArrow (t3, t4)) ->
             let s1, e1 = unify_inner t1 t3
-            if e1 then s1, e1 else
-                let s2, e2 = unify_inner (apply_subst_ty s1 t2) (apply_subst_ty s1 t4)
-                (compose_subst s2 s1), e2
+            let s2, e2 = unify_inner (apply_subst_ty s1 t2) (apply_subst_ty s1 t4)
+            compose_subst s2 s1, e1 || e2
         | (TyVar tv1, TyVar tv2) when tv1 = tv2 -> [], false
         | (TyVar tv, t) | (t, TyVar tv) when not (Set.contains tv (freevars_ty t)) -> [(tv, t)], false
         | (TyTuple ts1, TyTuple ts2) when List.length ts1 = List.length ts2 ->
             List.fold2 (fun (s, e) t1 t2 ->
-                if e then s,e else
-                    let su, eu = unify_inner (apply_subst_ty s t1) (apply_subst_ty s t2)
-                    (compose_subst su s), eu
+                let su, eu = unify_inner (apply_subst_ty s t1) (apply_subst_ty s t2)
+                compose_subst su s, e || eu
             ) ([], false) ts1 ts2
         | _ -> [], true
     let s, e = unify_inner t1 t2
