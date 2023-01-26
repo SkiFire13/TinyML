@@ -193,9 +193,9 @@ let rec pretty_expr e =
         sprintf "fun %s-> %s" parms (pretty_expr e)
     
     | App (e1, e2) -> 
-        match e2 with
-        | Lit _ | Var _ -> sprintf "%s %s" (pretty_expr e1) (pretty_expr e2)
-        | _ -> sprintf "%s (%s)" (pretty_expr e1) (pretty_expr e2)
+        let fmt1 = match e1 with Lit _ | Var _  | App _ -> sprintf "%s" | _ -> sprintf "(%s)"
+        let fmt2 = match e2 with Lit _ | Var _ -> sprintf "%s" | _ -> sprintf "(%s)"
+        sprintf "%s %s" (fmt1 (pretty_expr e1)) (fmt2 (pretty_expr e2))
 
     | Var x -> x
 
