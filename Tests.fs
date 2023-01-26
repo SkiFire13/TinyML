@@ -6,24 +6,19 @@ open TinyML
 open TinyML.Ast
 open TinyML.Typing
 
-let parse_expr_from_string str = Parsing.parse_from_string SyntaxError str "TEST" (1, 1) Parser.program Lexer.tokenize Parser.tokenTagToTokenId
+let parse_expr_from_string expr = Parsing.parse_from_string SyntaxError expr "TEST" (1, 1) Parser.program Lexer.tokenize Parser.tokenTagToTokenId
 
-let assert_inferred_type_eq str expected_ty =
+let assert_inferred_type_eq expr expected_ty =
     let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) []
-    let expr = parse_expr_from_string str
+    let expr = parse_expr_from_string expr
     let (expr_ty, _) = typeinfer_expr tenv expr
     Assert.Equal ((normalize_ty expr_ty), expected_ty)
 
-let assert_inference_error str =
+let assert_inference_error expr =
     let tenv = List.map (fun (n, t) -> (n, Forall (Set.empty, t))) []
-    let expr = parse_expr_from_string str
-    let failed =
-        try
-            let _ = typeinfer_expr tenv expr
-            false
-        with _ ->
-            true
-    if not failed then Assert.Fail "Type inference didn't fail"
+    let expr = parse_expr_from_string expr
+    try let _ = typeinfer_expr tenv expr in Assert.Fail "Type inference didn't fail"
+    with TypeError _ -> ()
 
 [<Fact>]
 let ``Test literals`` () =
