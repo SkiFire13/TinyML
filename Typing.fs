@@ -85,7 +85,10 @@ module TyVarGenerator =
         ty
 let fresh_ty_var = TyVarGenerator.fresh_ty_var
 
-let refresh_scheme (Forall (tvs, ty) : scheme) : ty =
+let generalize_ty (env : scheme env) (t : ty) : scheme =
+    Forall (freevars_ty t - freevars_scheme_env env, t)
+
+let instantiate_scheme (Forall (tvs, ty) : scheme) : ty =
     let s = List.map (fun tv -> (tv, fresh_ty_var())) (Set.toList tvs)
     apply_subst_ty s ty
 
@@ -103,7 +106,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
             match List.tryFind (fun (n, _) -> n = x) env with
             | Some (_, sch) -> sch
             | None -> lexical_error "variable %s is not defined" x
-        refresh_scheme sch, []
+        instantiate_scheme sch, []
 
     | Lambda (x, txo, tro, e) ->
         let tx = Option.defaultWith fresh_ty_var txo
@@ -147,8 +150,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let sp = compose_subst (unify err (ty_of_pat x) (apply_subst_ty so t1)) so
         let env = apply_subst_env sp env
         let t1 = apply_subst_ty sp t1
-        let tvs = freevars_ty t1 - freevars_scheme_env env
-        let t2, s2 = typeinfer_expr (bind_pat x (Forall (tvs, t1)) env) e2
+        let t2, s2 = typeinfer_expr (bind_pat x (generalize_ty env t1) env) e2
         t2, compose_all_substs [ s2; sp; s1 ]
 
     | IfThenElse (e1, e2, e3o) ->
@@ -184,9 +186,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let sf = compose_subst (unify err (apply_subst_ty sf tf) t1) sf
         let env = apply_subst_env sf env
         let t1 = apply_subst_ty sf t1
-        let tvs = freevars_ty t1 - freevars_scheme_env env
-        let sch = Forall (tvs, t1)
-        let t2, s2 = typeinfer_expr ((f, sch) :: env) e2
+        let t2, s2 = typeinfer_expr ((f, generalize_ty env t1) :: env) e2
         t2, compose_subst s2 sf
 
     | BinOp (e1, ("+" | "-" | "/" | "%" | "*" as op), e2) ->
