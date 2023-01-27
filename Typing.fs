@@ -109,7 +109,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let tx = Option.defaultWith fresh_ty_var txo
         let (t, s) = typeinfer_expr ((x, Forall (Set.empty, tx)) :: env) e
         let err = type_error "type annotation in let binding is wrong: expected %s, but got %s"
-        let s = Option.defaultValue s (Option.map (fun tr -> compose_subst (unify err tr t) s) tro)
+        let s = tro |> Option.map (fun tr -> compose_subst (unify err tr t) s) |> Option.defaultValue s
         TyArrow (apply_subst_ty s tx, apply_subst_ty s t), s
 
     | App (e1, e2) ->
@@ -138,7 +138,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let t1, s1 = typeinfer_expr env e1
         let env = apply_subst_env s1 env
         let err t1 tr = type_error "type annotation in let binding of %s is wrong: exptected %s, but got %s" (pretty_pattern x) tr t1
-        let so = Option.defaultValue [] (Option.map (unify err t1) tyo)
+        let so = tyo |> Option.map (unify err t1) |> Option.defaultValue []
         let err = type_error "binding %s was expecting a tuple type %s but got type %s" (pretty_pattern x)
         let rec ty_of_pat p =
             match p with
@@ -158,7 +158,7 @@ let rec typeinfer_expr (env : scheme env) (e : expr) : ty * subst =
         let env = apply_subst_env sb env
         let t2, s2 = typeinfer_expr env e2
         let env = apply_subst_env s2 env
-        let t3, s3 = Option.defaultValue (TyUnit, []) (Option.map (typeinfer_expr env) e3o)
+        let t3, s3 = e3o |> Option.map (typeinfer_expr env) |> Option.defaultValue (TyUnit, [])
         let err tt te =
             match e3o with
             | Some _ -> type_error "type mismatch in if-then-else: then branch has type %s and is different from else branch type %s" tt te
